@@ -73,55 +73,36 @@
                             Command="{Binding RetryFailedTransferCommand}"
                             HorizontalAlignment="Right"
                             Margin="0,0,0,4" />
-                    <DataGrid x:Name="DataGrid_TransferDetails"
-                              Grid.Row="1"
-                              ItemsSource="{Binding SelectedBridge.TransferDetails}"
-                              SelectedItem="{Binding SelectedTransferDetail, Mode=TwoWay}"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True"
-                              CanUserAddRows="False"
-                              HeadersVisibility="Column"
-                              GridLinesVisibility="Horizontal"
-                              Background="{StaticResource SurfaceBackgroundBrush}"
-                              Foreground="{StaticResource PrimaryTextBrush}"
-                              BorderBrush="{StaticResource ControlBorderBrush}"
-                              HorizontalGridLinesBrush="{StaticResource ControlBorderBrush}"
-                              VerticalGridLinesBrush="{StaticResource ControlBorderBrush}"
-                              RowBackground="{StaticResource SurfaceBackgroundBrush}"
-                              AlternatingRowBackground="{StaticResource RaisedBackgroundBrush}"
-                              SelectionUnit="FullRow">
-                        <DataGrid.Resources>
-                            <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Background" Value="{StaticResource RaisedBackgroundBrush}" />
-                                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
-                                <Setter Property="BorderBrush" Value="{StaticResource ControlBorderBrush}" />
-                                <Setter Property="BorderThickness" Value="0,0,1,1" />
-                                <Setter Property="Padding" Value="8,5" />
-                                <Setter Property="HorizontalContentAlignment" Value="Left" />
-                            </Style>
-                            <Style TargetType="DataGridCell">
+                    <ListBox Grid.Row="1"
+                             ItemsSource="{Binding SelectedBridge.TransferDetails}"
+                             SelectedItem="{Binding SelectedTransferDetail, Mode=TwoWay}"
+                             Background="{StaticResource SurfaceBackgroundBrush}"
+                             Foreground="{StaticResource PrimaryTextBrush}"
+                             BorderBrush="{StaticResource ControlBorderBrush}"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             VirtualizingPanel.IsVirtualizing="True"
+                             VirtualizingPanel.VirtualizationMode="Recycling">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Padding" Value="0" />
                                 <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="Padding" Value="6,3" />
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                                <Setter Property="BorderThickness" Value="1" />
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource SelectionBrush}" />
-                                        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+                                        <Setter Property="BorderBrush" Value="{StaticResource SelectionBrush}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
-                        </DataGrid.Resources>
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="File name" Binding="{Binding FileName}" Width="1.2*" />
-                            <DataGridTextColumn Header="Relative path" Binding="{Binding RelativePath}" Width="1.5*" />
-                            <DataGridTextColumn Header="State" Binding="{Binding Status}" Width="Auto" />
-                            <DataGridTextColumn Header="Progress" Binding="{Binding Progress, StringFormat={}{0:F0}%}" Width="Auto" />
-                            <DataGridTextColumn Header="Destination folder" Binding="{Binding DestinationFolderPath}" Width="2*" />
-                            <DataGridTextColumn Header="Details" Binding="{Binding FailureReason}" Width="1.5*" />
-                            <DataGridTextColumn Header="Updated" Binding="{Binding LastUpdatedUtc, StringFormat={}{0:yyyy-MM-dd HH:mm:ss} UTC}" Width="Auto" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <controls:TransferDetailControl />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                     </Grid>
                 </Grid>
             </Grid>
