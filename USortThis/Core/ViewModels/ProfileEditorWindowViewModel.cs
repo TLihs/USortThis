@@ -18,6 +18,8 @@ namespace USortThis.Core.ViewModels
         private readonly bool _isNewProfile;
         private readonly IFolderBridgeModelFactory? _bridgeFactory;
         private readonly IFolderItemModelFactory? _folderFactory;
+        private readonly IFileItemModelFactory _fileItemFactory;
+        private readonly IRuleTestInteractionService _ruleTestInteractionService;
         private readonly IFilterRuleCriteriaFactory? _criteriaFactory;
         private readonly IFilterRuleCriteriaViewModelFactory? _criteriaVmFactory;
         private readonly HashSet<long> _originalRuleIds = [];
@@ -37,6 +39,7 @@ namespace USortThis.Core.ViewModels
         public ICommand AddRouteCommand { get; }
         public ICommand BrowseSourceCommand { get; }
         public ICommand BrowseDestinationCommand { get; }
+        public ICommand TestSampleFilesCommand { get; }
 
         // Keep references to RelayCommands so we can call RaiseCanExecuteChanged
         private RelayCommand? _addCriteriaRelayCommand;
@@ -344,10 +347,17 @@ namespace USortThis.Core.ViewModels
             }
         }
 
-        public ProfileEditorWindowViewModel(ProfileListModel profileListModel, ProfileItemModel? profile, ILocalizationService localizationService)
+        public ProfileEditorWindowViewModel(
+            ProfileListModel profileListModel,
+            ProfileItemModel? profile,
+            ILocalizationService localizationService,
+            IFileItemModelFactory fileItemFactory,
+            IRuleTestInteractionService ruleTestInteractionService)
             : base(localizationService)
         {
             ArgumentNullException.ThrowIfNull(profileListModel);
+            _fileItemFactory = fileItemFactory ?? throw new ArgumentNullException(nameof(fileItemFactory));
+            _ruleTestInteractionService = ruleTestInteractionService ?? throw new ArgumentNullException(nameof(ruleTestInteractionService));
             _profileListModel = profileListModel;
             _isNewProfile = profile == null;
             _profile = profile ?? new ProfileItemModel(
@@ -387,6 +397,7 @@ namespace USortThis.Core.ViewModels
             BrowseSourceCommand = _browseSourceRelayCommand;
             _browseDestinationRelayCommand = new RelayCommand(_ => BrowseDestination(), _ => SelectedRule != null);
             BrowseDestinationCommand = _browseDestinationRelayCommand;
+            TestSampleFilesCommand = new RelayCommand(_ => OnTestSampleFiles());
 
             foreach (var bridge in _profile.GetFolderBridges())
             {
@@ -415,6 +426,44 @@ namespace USortThis.Core.ViewModels
                         _originalRuleIds.Add(route.Id);
                 SelectedBridge = Bridges.FirstOrDefault();
             }
+        }
+
+        private void OnTestSampleFiles()
+        {
+            var filePaths = _ruleTestInteractionService.SelectSampleFiles();
+            if (filePaths == null || filePaths.Count == 0)
+                return;
+
+            _ruleTestInteractionService.ShowResults(EvaluateSampleFiles(filePaths));
+        }
+
+        private IReadOnlyList<RuleTestResult> EvaluateSampleFiles(IEnumerable<string> filePaths)
+        {
+            var results = new List<RuleTestResult>();
+
+            foreach (var filePath in filePaths)
+            {
+                try
+                {
+                    var file = _fileItemFactory.Create(filePath);
+                    var matchingRoutes = Bridges
+                        .SelectMany(bridge => bridge.Routes
+                            .Where(route => route.Matches(file))
+                            .Select(route => $"{bridge.CustomName} / {route.Name}"))
+                        .ToList();
+
+                    results.Add(new RuleTestResult(
+                        filePath,
+                        matchingRoutes.Count == 0 ? "No match" : "Matched",
+                        matchingRoutes.Count == 0 ? "No configured route matched this file." : string.Join("; ", matchingRoutes)));
+                }
+                catch (Exception exception)
+                {
+                    results.Add(new RuleTestResult(filePath, "Error", exception.Message));
+                }
+            }
+
+            return results;
         }
 
         public void Save()

@@ -11,6 +11,7 @@ using USortThis.Core.Data;
 using USortThis.Core.Factories;
 using USortThis.Core.Interfaces;
 using USortThis.Core.Services;
+using USortThis.UI.Services;
 using USortThis.UI.Views;
 
 namespace USortThis
@@ -31,6 +32,7 @@ namespace USortThis
             var services = new ServiceCollection();
             services.AddSingleton<ILocalizationService, IniLocalizationService>();
             services.AddSingleton<IFileSystemIOService, WinFileSystemIOService>();
+            services.AddSingleton<IRuleTestInteractionService, RuleTestInteractionService>();
             services.AddSingleton<WindowsCredentialStore>();
             services.AddSingleton<ConfiguredLocationService>();
             // Id factory used by model factories

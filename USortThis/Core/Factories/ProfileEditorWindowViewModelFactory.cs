@@ -14,16 +14,24 @@ namespace USortThis.Core.Factories
     {
         private readonly ILocalizationService _localizationService;
         private readonly IDatabaseService _databaseService;
+        private readonly IFileItemModelFactory _fileItemModelFactory;
+        private readonly IRuleTestInteractionService _ruleTestInteractionService;
 
-        public ProfileEditorWindowViewModelFactory(ILocalizationService localizationService, IDatabaseService databaseService)
+        public ProfileEditorWindowViewModelFactory(
+            ILocalizationService localizationService,
+            IDatabaseService databaseService,
+            IFileItemModelFactory fileItemModelFactory,
+            IRuleTestInteractionService ruleTestInteractionService)
         {
             _localizationService = localizationService;
             _databaseService = databaseService;
+            _fileItemModelFactory = fileItemModelFactory;
+            _ruleTestInteractionService = ruleTestInteractionService;
         }
 
         public ProfileEditorWindowViewModel Create(ProfileListModel model, ProfileItemModel? profile = null)
         {
-            return new ProfileEditorWindowViewModel(model, profile, _localizationService);
+            return new ProfileEditorWindowViewModel(model, profile, _localizationService, _fileItemModelFactory, _ruleTestInteractionService);
         }
     }
 }
