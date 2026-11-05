@@ -73,15 +73,17 @@ Implemented features include:
 - Rule validation.
 - Profile import/export.
 - Dry-run preview.
+- Rule testing against selected sample files.
 - Transfer history cards showing paths, status, progress, and failure details.
 
 Pending feature candidates:
 
 - Scheduled or continuous sorting, with clear pause/resume controls and run status.
-- Rule testing against selected sample files, building on dry-run preview.
 - Duplicate detection using file content hashes, with user-controlled conflict handling.
 - Transfer notifications and completion/failure summaries linked to transfer history.
 - Safe undo or restore workflows for eligible transfers, with explicit safeguards for moves and overwritten files.
 - Backup and restore for profiles and application settings, without exporting credentials.
+- Implement build and test tools.
+- Implement proper localization.
 
 Treat implemented features as existing behavior to maintain. Pending candidates are suggestions, not committed requirements; confirm scope and safety implications before implementation.

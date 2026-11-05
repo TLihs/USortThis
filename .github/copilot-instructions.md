@@ -14,6 +14,7 @@ Use [docs/copilot-context.md](../docs/copilot-context.md) for the application ov
 - The project targets .NET 8 for Windows and uses WPF plus Windows Forms integration.
 - View models inherit `ViewModelBase`/`NotifyBase`; use existing `SetProperty` helpers where available and follow neighboring notification patterns.
 - Keep view models focused on state and commands; put file/database work in existing services and use existing factories/DI.
+- Follow MVVM for UI workflows: use view-model commands and abstractions/services for dialogs and result presentation; avoid orchestrating feature workflows in code-behind.
 - Preserve the dark WPF theme resources and custom control templates in `App.xaml`. When changing a template, check the actual content, popup, focus, selection, and disabled states—not only brush resources.
 - Database initialization occurs during application startup before the main window is created. Keep schema creation and startup ordering consistent with `DatabaseService.InitializeAsync`.
 - During development, when a faulty database schema causes runtime issues, prefer resetting/recreating the database rather than adding schema repair or migration code.
@@ -22,4 +23,5 @@ Use [docs/copilot-context.md](../docs/copilot-context.md) for the application ov
 - When changing WPF disabled-button colors, verify the actual rendered button content and template trigger behavior; changing a brush resource alone may not alter the visible text color if template/content presentation overrides it.
 
 ## Feature Roadmap Status
-The planned sequence has been implemented: retry failed transfers, conflict handling options, rule validation, profile import/export, and dry-run preview. Treat these as existing functionality to maintain, not pending work. See the project context document for behavior notes.
+- Implemented features include retry failed transfers, conflict handling options, rule validation, profile import/export, dry-run preview, and rule testing against selected sample files. Treat these as existing functionality to maintain, not pending work. See `docs/copilot-context.md` for the authoritative roadmap and behavior notes.
+- When implementing a feature listed as pending in this repository's roadmap, update docs/copilot-context.md to move it to implemented and keep .github/copilot-instructions.md Feature Roadmap Status guidance synchronized.
