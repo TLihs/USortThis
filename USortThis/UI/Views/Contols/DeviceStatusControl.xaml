@@ -1,0 +1,46 @@
+<UserControl x:Class="USortThis.UI.Views.Controls.DeviceStatusControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="80" d:DesignWidth="280">
+    <Border Background="#2A2A2A" BorderBrush="#3C3C3C" BorderThickness="1" CornerRadius="4" Margin="0,4,0,4" Padding="8">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Icon + Connection Status Indicator -->
+            <Grid Grid.Column="0" Grid.RowSpan="2" Width="40" Height="40" VerticalAlignment="Top">
+                <Image x:Name="Icon" Width="32" Height="32" />
+                <!-- Connection status dot -->
+                <Ellipse x:Name="StatusIndicator" Width="12" Height="12" Fill="LimeGreen" 
+                         HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+            </Grid>
+
+            <!-- Device Name and Path -->
+            <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" 
+                        Margin="12,0,8,0" VerticalAlignment="Center">
+                <TextBlock x:Name="DeviceNameText" FontWeight="Bold" FontSize="13" Foreground="White" 
+                           TextTrimming="CharacterEllipsis"/>
+                <TextBlock x:Name="DevicePathText" FontSize="11" Foreground="#AAAAAA" 
+                           TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
+                <TextBlock x:Name="DeviceExtraText" FontSize="10" Foreground="#888888" 
+                           TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
+            </StackPanel>
+
+            <!-- Device Type Badge -->
+            <Border x:Name="TypeBadge" Grid.Column="2" Grid.Row="0" Background="#3C5AA6" CornerRadius="3" 
+                    Padding="4,2,4,2" Margin="8,0,0,0" VerticalAlignment="Top">
+                <TextBlock x:Name="DeviceTypeBadge" FontSize="10" Foreground="White" FontWeight="Bold"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

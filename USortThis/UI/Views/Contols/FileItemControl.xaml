@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="USortThis.UI.Views.Controls.FileItemControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:USortThis.Core.ViewModels"
+             d:DataContext="{d:DesignInstance Type=vm:FileItemViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="90" d:DesignWidth="600">
+
+    <Border x:Name="RootBorder" Padding="8" Margin="4" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="1" CornerRadius="4" Background="{StaticResource SurfaceBackgroundBrush}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="160" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+                <TextBlock Text="{Binding SourcePath}" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding DestinationPath}" FontStyle="Italic" Foreground="{StaticResource SecondaryTextBrush}" TextTrimming="CharacterEllipsis"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right">
+                <TextBlock Text="{Binding StatusText}" HorizontalAlignment="Right"/>
+                <TextBlock Text="{Binding FailureReasonText}" Foreground="#FF8A8A" HorizontalAlignment="Right"/>
+            </StackPanel>
+
+            <ProgressBar Grid.Row="1" Grid.ColumnSpan="2" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" Height="16" Margin="0,8,0,0"/>
+
+            <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding Progress, StringFormat=Progress: {0}%}" HorizontalAlignment="Right" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,4,0,0"/>
+        </Grid>
+    </Border>
+</UserControl>

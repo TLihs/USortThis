@@ -1,0 +1,46 @@
+<Window x:Class="USortThis.UI.Views.TestFileGeneratorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Generate Test File" Height="300" Width="520"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{StaticResource WindowBackgroundBrush}" Foreground="{StaticResource PrimaryTextBrush}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="File name" VerticalAlignment="Center" Margin="0,0,8,8" />
+        <TextBox x:Name="FileNameTextBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="test-data.txt" Margin="0,0,0,8" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Folder" VerticalAlignment="Center" Margin="0,0,8,8" />
+        <TextBox x:Name="FolderTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,8,8" />
+        <Button Grid.Row="1" Grid.Column="2" Content="Browse..." Click="Browse_Click" Margin="0,0,0,8" Padding="10,3" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Size" VerticalAlignment="Center" Margin="0,0,8,8" />
+        <TextBox x:Name="SizeTextBox" Grid.Row="2" Grid.Column="1" Text="100" Margin="0,0,8,8" />
+        <ComboBox x:Name="SizeUnitComboBox" Grid.Row="2" Grid.Column="2" SelectedIndex="1" Margin="0,0,0,8">
+            <ComboBoxItem Content="Bytes" />
+            <ComboBoxItem Content="MiB" />
+            <ComboBoxItem Content="GiB" />
+        </ComboBox>
+
+        <ProgressBar x:Name="GenerationProgressBar" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Height="18" Minimum="0" Maximum="100" Margin="0,2,0,4" />
+        <TextBlock x:Name="StatusTextBlock" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,8" />
+
+        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="CancelButton" Content="Close" IsCancel="True" MinWidth="80" Margin="0,0,8,0" Padding="10,4" />
+            <Button x:Name="GenerateButton" Content="Generate" IsDefault="True" Click="Generate_Click" MinWidth="90" Padding="10,4" />
+        </StackPanel>
+    </Grid>
+</Window>

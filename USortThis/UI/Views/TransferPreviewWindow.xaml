@@ -1,0 +1,63 @@
+<Window x:Class="USortThis.UI.Views.TransferPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Dry-Run Preview" Height="650" Width="1050"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource WindowBackgroundBrush}"
+        Foreground="{StaticResource PrimaryTextBrush}">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Margin="0,0,0,8">
+            <TextBlock x:Name="SummaryTextBlock" FontWeight="Bold" />
+            <TextBlock Text="Preview only. No files will be copied, overwritten, or moved. Ask-each-time conflicts are marked for resolution during a real run."
+                       Foreground="{StaticResource SecondaryTextBrush}"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+        <Expander x:Name="WarningsExpander"
+                  Grid.Row="1"
+                  Header="Enumeration warnings"
+                  Margin="0,0,0,8"
+                  Visibility="Collapsed">
+            <ListBox x:Name="WarningsListBox"
+                     MaxHeight="120"
+                     ItemsSource="{Binding}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap" Foreground="{StaticResource SecondaryTextBrush}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Expander>
+        <DataGrid x:Name="PreviewDataGrid"
+                  Grid.Row="2"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  EnableRowVirtualization="True"
+                  EnableColumnVirtualization="True"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  Background="{StaticResource SurfaceBackgroundBrush}"
+                  Foreground="{StaticResource PrimaryTextBrush}"
+                  BorderBrush="{StaticResource ControlBorderBrush}"
+                  RowBackground="{StaticResource SurfaceBackgroundBrush}"
+                  AlternatingRowBackground="{StaticResource RaisedBackgroundBrush}"
+                  ItemsSource="{Binding}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Bridge" Binding="{Binding BridgeName}" Width="120" />
+                <DataGridTextColumn Header="Route" Binding="{Binding RouteName}" Width="140" />
+                <DataGridTextColumn Header="Source file" Binding="{Binding SourcePath}" Width="2*" />
+                <DataGridTextColumn Header="Planned destination" Binding="{Binding DestinationPath}" Width="2*" />
+                <DataGridTextColumn Header="Planned action" Binding="{Binding PlannedAction}" Width="180" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="Close" IsCancel="True" MinWidth="90" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,46 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:USortThis.UI.Views.Templates">
+
+    <DataTemplate x:Key="NoneTemplate">
+        <TextBlock Text="No filter" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="ExtensionTemplate">
+        <StackPanel>
+            <TextBlock Text="Extensions:"/>
+            <TextBox Text="{Binding Model.Extensions}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="FileNameTemplate">
+        <StackPanel>
+            <TextBlock Text="File name filter:"/>
+            <TextBox Text="{Binding Model.Pattern}"/>
+            <CheckBox Content="Use Regex" IsChecked="{Binding Model.UseRegex}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="MinDateTemplate">
+        <StackPanel>
+            <TextBlock Text="Min. Date:"/>
+            <DatePickerTextBox Text="{Binding Model.MinDate}"/>
+            <CheckBox Content="Use Creation Time" IsChecked="{Binding Model.UseCreationTime}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="MaxDateTemplate">
+        <StackPanel>
+            <TextBlock Text="Max. Date:"/>
+            <DatePickerTextBox Text="{Binding Model.MaxDate}"/>
+            <CheckBox Content="Use Creation Time" IsChecked="{Binding Model.UseCreationTime}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <local:FilterRuleCriteriaTemplateSelector x:Key="CriteriaSelector"
+                                            NoneTemplate="{StaticResource NoneTemplate}"
+                                            ExtensionTemplate="{StaticResource ExtensionTemplate}"
+                                            FileNameTemplate="{StaticResource FileNameTemplate}"
+                                            MinDateTemplate="{StaticResource MinDateTemplate}"
+                                            MaxDateTemplate="{StaticResource MaxDateTemplate}"/>
+</ResourceDictionary>

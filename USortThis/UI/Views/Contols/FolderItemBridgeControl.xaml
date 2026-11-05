@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="USortThis.UI.Views.Controls.FolderItemBridgeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:USortThis.UI.Views.Controls"
+             xmlns:controls="clr-namespace:USortThis.UI.Views.Controls"
+             xmlns:models="clr-namespace:USortThis.Core.Models"
+             d:DataContext="{d:DesignInstance Type=models:FolderBridgeModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Border x:Name="RootBorder" Padding="8" Margin="4" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="1" CornerRadius="4" Background="{StaticResource SurfaceBackgroundBrush}" AllowDrop="True" DragEnter="RootBorder_DragEnter" DragOver="RootBorder_DragOver" Drop="RootBorder_Drop">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource SurfaceBackgroundBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ControlBorderBrush}" />
+            </Style>
+        </Border.Style>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="160" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+                <TextBlock Text="{Binding CustomName}" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding SourceDescription}" FontStyle="Italic" Foreground="{StaticResource SecondaryTextBrush}" TextTrimming="CharacterEllipsis"/>
+                <ItemsControl ItemsSource="{Binding Routes}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DestinationPath}" Foreground="{StaticResource SecondaryTextBrush}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right">
+                <TextBlock Text="{Binding PendingTransfers, StringFormat=Pending: {0}}" HorizontalAlignment="Right"/>
+                <TextBlock Text="{Binding CompletedTransfers, StringFormat=Completed: {0}}" HorizontalAlignment="Right"/>
+                <TextBlock Text="{Binding FailedTransfers, StringFormat=Failed: {0}}" Foreground="#FF8A8A" HorizontalAlignment="Right"/>
+            </StackPanel>
+
+            <ProgressBar Grid.Row="1" Grid.ColumnSpan="2" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" Height="16" Margin="0,8,0,0"/>
+
+                <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding Progress, StringFormat={}{0:F2}%}" HorizontalAlignment="Center" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,4,0,0"/>
+
+            <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding Routes.Count, StringFormat=Routes: {0}. Drop files/folders here when no source folder is configured.}" Foreground="{StaticResource SecondaryTextBrush}" FontSize="11" Margin="0,5,0,0" />
+        </Grid>
+    </Border>
+</UserControl>
