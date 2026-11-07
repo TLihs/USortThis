@@ -20,6 +20,9 @@ namespace USortThis.UI.Views.Controls
     /// </summary>
     public partial class ProfileListControl : System.Windows.Controls.UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfileListControl"/> class.
+        /// </summary>
         public ProfileListControl()
         {
             InitializeComponent();

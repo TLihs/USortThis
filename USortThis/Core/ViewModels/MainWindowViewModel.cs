@@ -15,6 +15,9 @@ using USortThis.Core.Services;
 
 namespace USortThis.Core.ViewModels
 {
+    /// <summary>
+    /// The main view model for the application, orchestrating profile management, sorting operations, and application commands.
+    /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
         private readonly MainWindowModel _model;
@@ -32,29 +35,80 @@ namespace USortThis.Core.ViewModels
 
         // ViewModels should not directly manipulate Views or Application lifecycle.
         // Expose an event the View can subscribe to when it needs to be closed.
+        /// <summary>
+        /// Occurs when the request to close the application is raised.
+        /// </summary>
         public event EventHandler? RequestClose;
 
+        /// <summary>
+        /// The command to close the application.
+        /// </summary>
         public ICommand CloseApplicationCommand { get; }
+        /// <summary>
+        /// The command to show the about dialog.
+        /// </summary>
         public ICommand ShowAboutCommand { get; }
 
+        /// <summary>
+        /// The command to open the settings.
+        /// </summary>
         public ICommand OpenSettingsCommand { get; }
 
+        /// <summary>
+        /// The command to create a new profile.
+        /// </summary>
         public ICommand CreateNewProfileCommand { get; }
+        /// <summary>
+        /// The command to edit the selected profile.
+        /// </summary>
         public ICommand EditProfileCommand { get; }
+        /// <summary>
+        /// The command to delete the selected profile.
+        /// </summary>
         public ICommand DeleteProfileCommand { get; }
+        /// <summary>
+        /// The command to import a profile.
+        /// </summary>
         public ICommand ImportProfileCommand { get; }
+        /// <summary>
+        /// The command to export the selected profile.
+        /// </summary>
         public ICommand ExportProfileCommand { get; }
+        /// <summary>
+        /// The command to preview the selected profile.
+        /// </summary>
         public ICommand PreviewProfileCommand { get; }
+        /// <summary>
+        /// The command to select a profile.
+        /// </summary>
         public ICommand SelectProfileCommand { get; }
 
         // New commands for sorting
+        /// <summary>
+        /// The command to start sorting with the active profile.
+        /// </summary>
         public ICommand StartSortCommand { get; }
+        /// <summary>
+        /// The command to stop sorting with the active profile.
+        /// </summary>
         public ICommand StopSortCommand { get; }
+        /// <summary>
+        /// The command to start sorting a specific profile.
+        /// </summary>
         public ICommand StartProfileSortCommand { get; }
+        /// <summary>
+        /// The command to stop sorting a specific profile.
+        /// </summary>
         public ICommand StopProfileSortCommand { get; }
+        /// <summary>
+        /// The command to retry transferring a failed file.
+        /// </summary>
         public ICommand RetryFailedTransferCommand { get; }
 
         private int _sortProgress;
+        /// <summary>
+        /// The progress of the current sorting operation, represented as a percentage (0-100).
+        /// </summary>
         public int SortProgress
         {
             get => _sortProgress;
@@ -62,11 +116,23 @@ namespace USortThis.Core.ViewModels
         }
 
         // New: collection for enumeration errors surfaced to the UI
+        /// <summary>
+        /// Collection of errors encountered during file enumeration, for display in the UI.
+        /// </summary>
         public ObservableCollection<FileEnumerationError> EnumerationErrors { get; } = new ObservableCollection<FileEnumerationError>();
+        /// <summary>
+        /// Collection of folder bridge items for the active profile.
+        /// </summary>
         public ObservableCollection<FolderBridgeModel> BridgeItems { get; } = [];
+        /// <summary>
+        /// Collection of location items for configured locations.
+        /// </summary>
         public ObservableCollection<LocationListEntry> LocationItems { get; } = [];
 
         private FolderBridgeModel? _selectedBridge;
+        /// <summary>
+        /// The currently selected bridge item.
+        /// </summary>
         public FolderBridgeModel? SelectedBridge
         {
             get => _selectedBridge;
@@ -79,6 +145,9 @@ namespace USortThis.Core.ViewModels
         }
 
         private FileTransferDetailModel? _selectedTransferDetail;
+        /// <summary>
+        /// The currently selected file transfer detail.
+        /// </summary>
         public FileTransferDetailModel? SelectedTransferDetail
         {
             get => _selectedTransferDetail;
@@ -95,8 +164,20 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// The name of the active profile.
+        /// </summary>
         public string ActiveProfile => _model.ActiveProfile?.Name ?? string.Empty;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindowViewModel"/> class.
+        /// </summary>
+        /// <param name="model">The main window model.</param>
+        /// <param name="profileListModel">The profile list model.</param>
+        /// <param name="databaseService">The database service.</param>
+        /// <param name="configuredLocationService">The configured location service.</param>
+        /// <param name="localizationService">The localization service.</param>
+        /// <exception cref="ArgumentNullException">Thrown if any of the arguments are null.</exception>
         public MainWindowViewModel(MainWindowModel model, ProfileListModel profileListModel, IDatabaseService databaseService, ConfiguredLocationService configuredLocationService, ILocalizationService localizationService) : base(localizationService)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
@@ -160,6 +241,12 @@ namespace USortThis.Core.ViewModels
                     SelectedBridge.TransferDetails.Contains(transfer));
         }
 
+        /// <summary>
+        /// Previews the active profile's sorting behavior without making any changes.
+        /// </summary>
+        /// <remarks>
+        /// Displays a modal window showing the files that would be sorted, along with any errors that would occur.
+        /// </remarks>
         private async Task OnPreviewProfileAsync()
         {
             var profile = _model.ActiveProfile;
@@ -188,6 +275,12 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Imports a profile from a file.
+        /// </summary>
+        /// <remarks>
+        /// Opens a file dialog to select a profile file, and imports the profile, making it the active profile.
+        /// </remarks>
         private void OnImportProfile()
         {
             var dialog = new Microsoft.Win32.OpenFileDialog
@@ -227,6 +320,12 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Exports the selected profile to a file.
+        /// </summary>
+        /// <remarks>
+        /// Opens a save file dialog to select a location for the profile file, and exports the profile.
+        /// </remarks>
         private void OnExportProfile()
         {
             var profile = _profileListModel.SelectedProfile;
@@ -265,6 +364,13 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Retries the failed transfer for the selected file transfer detail.
+        /// </summary>
+        /// <remarks>
+        /// Attempts to re-initiate the transfer for a file that previously failed to transfer.
+        /// </remarks>
+        /// <param name="detail">The file transfer detail for the transfer to retry.</param>
         private async Task OnRetryFailedTransferAsync(FileTransferDetailModel? detail)
         {
             var bridge = SelectedBridge;
@@ -286,12 +392,23 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Handles the property changed event for the selected transfer detail.
+        /// </summary>
+        /// <remarks>
+        /// Updates the command state for the retry failed transfer command based on the transfer detail status.
+        /// </remarks>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event args.</param>
         private void OnSelectedTransferDetailPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(FileTransferDetailModel.Status))
                 (RetryFailedTransferCommand as RelayCommand)?.RaiseCanExecuteChanged();
         }
 
+        /// <summary>
+        /// Refreshes the list of location items from the configured locations and connected devices.
+        /// </summary>
         public void RefreshLocationItems()
         {
             LocationItems.Clear();
@@ -304,6 +421,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Opens the dialog to add a new configured location.
+        /// </summary>
         public void AddConfiguredLocation()
         {
             var dialog = new UI.Views.ConfiguredLocationDialog(_configuredLocationService) { Owner = System.Windows.Application.Current.MainWindow };
@@ -311,6 +431,10 @@ namespace USortThis.Core.ViewModels
                 RefreshLocationItems();
         }
 
+        /// <summary>
+        /// Opens the dialog to edit an existing configured location.
+        /// </summary>
+        /// <param name="location">The configured location to edit.</param>
         public void EditConfiguredLocation(ConfiguredLocationModel location)
         {
             var dialog = new UI.Views.ConfiguredLocationDialog(_configuredLocationService, location) { Owner = System.Windows.Application.Current.MainWindow };
@@ -318,6 +442,10 @@ namespace USortThis.Core.ViewModels
                 RefreshLocationItems();
         }
 
+        /// <summary>
+        /// Removes a configured location.
+        /// </summary>
+        /// <param name="location">The configured location to remove.</param>
         public void RemoveConfiguredLocation(ConfiguredLocationModel location)
         {
             if (System.Windows.MessageBox.Show($"Remove '{location.Label}' from configured locations?", "Remove location", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
@@ -326,6 +454,11 @@ namespace USortThis.Core.ViewModels
             RefreshLocationItems();
         }
 
+        /// <summary>
+        /// Tests the connection to a configured location and updates its connection status.
+        /// </summary>
+        /// <param name="location">The configured location to test.</param>
+        /// <returns>A message indicating the result of the connection test.</returns>
         public string TestConfiguredLocation(ConfiguredLocationModel location)
         {
             var result = _configuredLocationService.TestConnection(location);
@@ -333,6 +466,10 @@ namespace USortThis.Core.ViewModels
             return result.Message;
         }
 
+        /// <summary>
+        /// Selects a bridge and makes it the currently active bridge.
+        /// </summary>
+        /// <param name="bridge">The bridge to select.</param>
         public void SelectBridge(FolderBridgeModel bridge)
         {
             if (BridgeItems.Contains(bridge))
@@ -369,6 +506,9 @@ namespace USortThis.Core.ViewModels
 
         private void ActiveProfileBridgeChanged(object? sender, ListItemEventArgs<FolderBridgeModel> e) => RefreshBridgeItems();
 
+        /// <summary>
+        /// Closes the application, raising the <see cref="RequestClose"/> event.
+        /// </summary>
         private void OnCloseApplication()
         {
             // Instead of calling Application.Current.Shutdown() here,
@@ -387,6 +527,9 @@ namespace USortThis.Core.ViewModels
         // 6. Set AboutWindow.Owner to the current application main window if available.
         // 7. Call ShowDialog() to display the AboutWindow modally.
         // 8. Use ServiceProvider.GetService where possible so behavior degrades gracefully if factories are not registered.
+        /// <summary>
+        /// Shows the about dialog, displaying information about the application and version.
+        /// </summary>
         private void OnShowAbout()
         {
             if (App.ServiceProvider is null)
@@ -432,22 +575,34 @@ namespace USortThis.Core.ViewModels
             aboutWindow.ShowDialog();
         }
 
+        /// <summary>
+        /// Opens the settings dialog or window.
+        /// </summary>
         private void OnOpenSettings()
         {
             // Implementation for opening settings
         }
 
+        /// <summary>
+        /// Creates a new profile and opens the profile editor.
+        /// </summary>
         private void OnCreateNewProfile()
         {
             OpenProfileEditor(createNewProfile: true);
         }
 
+        /// <summary>
+        /// Edits the selected profile by opening it in the profile editor.
+        /// </summary>
         private void OnEditProfile()
         {
             if (_profileListModel.SelectedProfile != null)
                 OpenProfileEditor();
         }
 
+        /// <summary>
+        /// Deletes the currently selected profile after user confirmation.
+        /// </summary>
         private void OnDeleteProfile()
         {
             var profile = _profileListModel.SelectedProfile;
@@ -488,6 +643,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Selects the specified profile as the active profile.
+        /// </summary>
         private void OnSelectProfile()
         {
             _model.ActiveProfile = _profileListModel.SelectedProfile;

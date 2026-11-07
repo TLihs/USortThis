@@ -11,6 +11,9 @@ using USortThis.Core.Models;
 
 namespace USortThis.Core.ViewModels
 {
+    /// <summary>
+    /// ViewModel for editing profiles in the application.
+    /// </summary>
     public class ProfileEditorWindowViewModel : ViewModelBase
     {
         private readonly ProfileListModel _profileListModel;
@@ -28,17 +31,53 @@ namespace USortThis.Core.ViewModels
         private readonly ObservableCollection<string> _validationErrors = [];
         private readonly ObservableCollection<string> _validationWarnings = [];
 
+        /// <summary>
+        /// Command to save the profile.
+        /// </summary>
         public ICommand SaveCommand { get; }
+        /// <summary>
+        /// Command to add a new rule.
+        /// </summary>
         public ICommand AddRuleCommand { get; }
+        /// <summary>
+        /// Command to remove an existing rule.
+        /// </summary>
         public ICommand RemoveRuleCommand { get; }
+        /// <summary>
+        /// Command to add new criteria to the selected rule.
+        /// </summary>
         public ICommand AddCriteriaCommand { get; private set; }
+        /// <summary>
+        /// Command to remove criteria from the selected rule.
+        /// </summary>
         public ICommand RemoveCriteriaCommand { get; private set; }
+        /// <summary>
+        /// Command to cancel editing and close the editor.
+        /// </summary>
         public ICommand CancelCommand { get; }
+        /// <summary>
+        /// Command to add a new bridge.
+        /// </summary>
         public ICommand AddBridgeCommand { get; }
+        /// <summary>
+        /// Command to remove an existing bridge.
+        /// </summary>
         public ICommand RemoveBridgeCommand { get; }
+        /// <summary>
+        /// Command to add a route to the selected bridge.
+        /// </summary>
         public ICommand AddRouteCommand { get; }
+        /// <summary>
+        /// Command to browse and select a source folder.
+        /// </summary>
         public ICommand BrowseSourceCommand { get; }
+        /// <summary>
+        /// Command to browse and select a destination folder.
+        /// </summary>
         public ICommand BrowseDestinationCommand { get; }
+        /// <summary>
+        /// Command to test sample files against the profile rules.
+        /// </summary>
         public ICommand TestSampleFilesCommand { get; }
 
         // Keep references to RelayCommands so we can call RaiseCanExecuteChanged
@@ -50,14 +89,35 @@ namespace USortThis.Core.ViewModels
         private RelayCommand? _browseSourceRelayCommand;
         private RelayCommand? _browseDestinationRelayCommand;
 
+        /// <summary>
+        /// Event triggered when the editor requests to close.
+        /// </summary>
         public event EventHandler? RequestClose;
 
         // Rules for selected profile
+        /// <summary>
+        /// Collection of rules for the selected profile.
+        /// </summary>
         public ObservableCollection<FilterRuleModel> Rules { get; } = new ObservableCollection<FilterRuleModel>();
+        /// <summary>
+        /// Bridges configured for the profile.
+        /// </summary>
         public ObservableCollection<FolderBridgeModel> Bridges { get; } = [];
+        /// <summary>
+        /// Locations configured in the profile.
+        /// </summary>
         public ObservableCollection<ConfiguredLocationModel> ConfiguredLocations { get; } = [];
+        /// <summary>
+        /// Validation errors found in the profile configuration.
+        /// </summary>
         public ObservableCollection<string> ValidationErrors => _validationErrors;
+        /// <summary>
+        /// Validation warnings found in the profile configuration.
+        /// </summary>
         public ObservableCollection<string> ValidationWarnings => _validationWarnings;
+        /// <summary>
+        /// Available options for handling conflicts when file exists in the destination.
+        /// </summary>
         public IReadOnlyList<ConflictHandlingOption> ConflictHandlingOptions { get; } =
         [
             new(ProfileItemModel.ConflictHandlingMode.Skip, "Skip"),
@@ -66,6 +126,9 @@ namespace USortThis.Core.ViewModels
             new(ProfileItemModel.ConflictHandlingMode.AskEachTime, "Ask each time")
         ];
 
+        /// <summary>
+        /// Conflict handling mode for the profile.
+        /// </summary>
         public ProfileItemModel.ConflictHandlingMode ConflictHandling
         {
             get => _profile.ConflictHandling;
@@ -78,6 +141,9 @@ namespace USortThis.Core.ViewModels
         }
 
         private ConfiguredLocationModel? _selectedSourceLocation;
+        /// <summary>
+        /// Selected source location for the profile.
+        /// </summary>
         public ConfiguredLocationModel? SelectedSourceLocation
         {
             get => _selectedSourceLocation;
@@ -91,6 +157,9 @@ namespace USortThis.Core.ViewModels
         }
 
         private ConfiguredLocationModel? _selectedDestinationLocation;
+        /// <summary>
+        /// Selected destination location for the profile.
+        /// </summary>
         public ConfiguredLocationModel? SelectedDestinationLocation
         {
             get => _selectedDestinationLocation;
@@ -104,6 +173,9 @@ namespace USortThis.Core.ViewModels
         }
 
         private FolderBridgeModel? _selectedBridge;
+        /// <summary>
+        /// Selected bridge for the profile.
+        /// </summary>
         public FolderBridgeModel? SelectedBridge
         {
             get => _selectedBridge;
@@ -132,6 +204,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Custom name for the selected bridge.
+        /// </summary>
         public string BridgeName
         {
             get => SelectedBridge?.CustomName ?? string.Empty;
@@ -145,6 +220,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Source folder path for the selected bridge.
+        /// </summary>
         public string SourcePath
         {
             get => SelectedBridge?.SourceFolder?.FolderPath ?? string.Empty;
@@ -160,6 +238,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Indicates if files should be moved after copying in the source bridge.
+        /// </summary>
         public bool MoveSourceAfterCopy
         {
             get => SelectedBridge?.MoveSourceAfterCopy ?? false;
@@ -173,6 +254,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Name of the profile being edited or created.
+        /// </summary>
         public string ProfileName
         {
             get => _profileName;
@@ -183,12 +267,21 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Title displayed in the editor window.
+        /// </summary>
         public string EditorTitle => _isNewProfile ? "Create Profile" : "Edit Profile";
 
         // Criteria for the selected rule
+        /// <summary>
+        /// Collection of criteria for the selected rule.
+        /// </summary>
         public ObservableCollection<FilterRuleCriteriaViewModel> RuleCriteria { get; } = new ObservableCollection<FilterRuleCriteriaViewModel>();
 
         private FilterRuleModel? _selectedRule;
+        /// <summary>
+        /// Selected rule for the profile.
+        /// </summary>
         public FilterRuleModel? SelectedRule
         {
             get => _selectedRule;
@@ -210,10 +303,16 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Warning message for the selected rule criteria.
+        /// </summary>
         public string SelectedRuleCriteriaWarning => SelectedRule?.Criterias.Count == 0
             ? "Add at least one criterion to this route. Routes without criteria do not copy files."
             : string.Empty;
 
+        /// <summary>
+        /// Validates the rules and bridges in the profile, updating validation errors and warnings.
+        /// </summary>
         public void ValidateRules()
         {
             _validationErrors.Clear();
@@ -312,6 +411,9 @@ namespace USortThis.Core.ViewModels
         }
 
         private FilterRuleCriteriaViewModel? _selectedCriteria;
+        /// <summary>
+        /// Selected criteria for the rule.
+        /// </summary>
         public FilterRuleCriteriaViewModel? SelectedCriteria
         {
             get => _selectedCriteria;
@@ -331,9 +433,15 @@ namespace USortThis.Core.ViewModels
 
         // Available criteria types for the add dropdown
         private static readonly string[] CriteriaTypes = ["None", "Extension", "FileName", "MinDate", "MaxDate"];
+        /// <summary>
+        /// Available types of criteria that can be added to a rule.
+        /// </summary>
         public IEnumerable<string> AvailableCriteriaTypes => CriteriaTypes;
 
         private string _selectedCriteriaType = "Extension";
+        /// <summary>
+        /// Currently selected type of criteria for addition to a rule.
+        /// </summary>
         public string SelectedCriteriaType
         {
             get => _selectedCriteriaType;
@@ -347,6 +455,15 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfileEditorWindowViewModel"/> class.
+        /// </summary>
+        /// <param name="profileListModel">The profile list model.</param>
+        /// <param name="profile">The profile item model, can be null for a new profile.</param>
+        /// <param name="localizationService">The localization service.</param>
+        /// <param name="fileItemFactory">The file item model factory.</param>
+        /// <param name="ruleTestInteractionService">The rule test interaction service.</param>
+        /// <exception cref="ArgumentNullException">Thrown when required services are null.</exception>
         public ProfileEditorWindowViewModel(
             ProfileListModel profileListModel,
             ProfileItemModel? profile,
@@ -428,6 +545,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Opens a file dialog to select sample files and tests them against the profile rules.
+        /// </summary>
         private void OnTestSampleFiles()
         {
             var filePaths = _ruleTestInteractionService.SelectSampleFiles();
@@ -437,6 +557,11 @@ namespace USortThis.Core.ViewModels
             _ruleTestInteractionService.ShowResults(EvaluateSampleFiles(filePaths));
         }
 
+        /// <summary>
+        /// Evaluates the selected sample files against the profile rules.
+        /// </summary>
+        /// <param name="filePaths">The file paths of the samples to test.</param>
+        /// <returns>A list of rule test results.</returns>
         private IReadOnlyList<RuleTestResult> EvaluateSampleFiles(IEnumerable<string> filePaths)
         {
             var results = new List<RuleTestResult>();
@@ -466,6 +591,9 @@ namespace USortThis.Core.ViewModels
             return results;
         }
 
+        /// <summary>
+        /// Saves the profile, including its rules and bridges, to the database.
+        /// </summary>
         public void Save()
         {
             if (string.IsNullOrWhiteSpace(ProfileName))
@@ -527,6 +655,9 @@ namespace USortThis.Core.ViewModels
             ? null
             : _folderFactory.Create(folder.FolderPath, folder.CustomName, folder.CustomDescription);
 
+        /// <summary>
+        /// Adds a new bridge to the profile.
+        /// </summary>
         public void AddBridge()
         {
             if (_bridgeFactory == null) return;
@@ -537,6 +668,9 @@ namespace USortThis.Core.ViewModels
             _addRouteRelayCommand?.RaiseCanExecuteChanged();
         }
 
+        /// <summary>
+        /// Removes the selected bridge from the profile.
+        /// </summary>
         public void RemoveBridge()
         {
             if (SelectedBridge == null) return;
@@ -546,6 +680,9 @@ namespace USortThis.Core.ViewModels
             _removeBridgeRelayCommand?.RaiseCanExecuteChanged();
         }
 
+        /// <summary>
+        /// Adds a new route to the selected bridge.
+        /// </summary>
         public void AddRoute()
         {
             if (SelectedBridge == null) return;
@@ -579,6 +716,9 @@ namespace USortThis.Core.ViewModels
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 SelectedRule.DestinationPath = dialog.SelectedPath;
         }
+        /// <summary>
+        /// Adds a new rule to the profile.
+        /// </summary>
         public void AddRule()
         {
             try
@@ -595,6 +735,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Removes the selected rule from the profile.
+        /// </summary>
         public void RemoveRule()
         {
             if (SelectedRule == null)
@@ -629,6 +772,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Adds a criteria to the selected rule.
+        /// </summary>
         public void AddCriteria()
         {
             Debug.WriteLine($"AddCriteria called: SelectedRule={SelectedRule?.Name}, _criteriaFactory={_criteriaFactory != null}");
@@ -676,6 +822,9 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Removes the selected criteria from the rule.
+        /// </summary>
         public void RemoveCriteria()
         {
             Debug.WriteLine($"RemoveCriteria called: SelectedRule={SelectedRule?.Name}, SelectedCriteria={SelectedCriteria?.Model.GetType().Name}");
@@ -701,10 +850,16 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Closes the editor, discarding any unsaved changes.
+        /// </summary>
         public void Close()
         {
             RequestClose?.Invoke(this, EventArgs.Empty);
         }
     }
+    /// <summary>
+    /// Represents a conflict handling option for file operations.
+    /// </summary>
     public sealed record ConflictHandlingOption(ProfileItemModel.ConflictHandlingMode Mode, string Label);
 }

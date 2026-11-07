@@ -7,13 +7,23 @@ using USortThis.Core.Models;
 
 namespace USortThis.Core.ViewModels
 {
+    /// <summary>
+    /// ViewModel for the list of profiles.
+    /// </summary>
     public class ProfileListViewModel : ViewModelBase
     {
         // map model instance -> viewmodel so removals are straightforward
         private readonly Dictionary<ProfileItemModel, ProfileItemViewModel> _map = [];
         private readonly ProfileListModel _model;
 
+        /// <summary>
+        /// Gets the items.
+        /// </summary>
         public ObservableCollection<ProfileItemViewModel> Items { get; } = [];
+
+        /// <summary>
+        /// Gets or sets the selected item.
+        /// </summary>
         public ProfileItemViewModel? SelectedItem
         {
             get => Items.FirstOrDefault(i => i.Profile == _model.SelectedProfile);
@@ -27,6 +37,16 @@ namespace USortThis.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfileListViewModel"/> class.
+        /// </summary>
+        /// <param name="model">The profile list model.</param>
+        /// <param name="profileItemVmFactory">The factory to create profile item view models.</param>
+        /// <param name="localizationService">The localization service.</param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="model"/>, <paramref name="profileItemVmFactory"/>,
+        /// or <paramref name="localizationService"/> is null.
+        /// </exception>
         public ProfileListViewModel(ProfileListModel model, IProfileItemViewModelFactory profileItemVmFactory, ILocalizationService localizationService)
             : base(localizationService)
         {

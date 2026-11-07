@@ -10,6 +10,8 @@ namespace USortThis.Core.Factories
 {
     public class AboutWindowModelFactory : IAboutWindowModelFactory
     {
+        /// <summary>Creates the About-window model.</summary>
+        /// <exception cref="NotImplementedException">The factory implementation has not been provided.</exception>
         public AboutWindowModel Create()
         {
             throw new NotImplementedException();

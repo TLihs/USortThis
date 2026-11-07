@@ -13,6 +13,10 @@ using static USortThis.Core.Models.FileItemModel;
 
 namespace USortThis.Core.Models
 {
+    /// <summary>
+    /// The FolderBridgeModel class is responsible for managing the transfer of files between a source and a destination folder.
+    /// It handles the routing of files based on defined filter rules and maintains the transfer statistics.
+    /// </summary>
     public class FolderBridgeModel : ModelBase
     {
         private readonly ObservableCollection<FileItemModel> _pendingFiles = [];
@@ -30,6 +34,9 @@ namespace USortThis.Core.Models
 
         private FolderItemModel? _sourceFolder;
         private FolderItemModel? _destinationFolder;
+        /// <summary>
+        /// Gets or sets the source folder for the transfer.
+        /// </summary>
         public FolderItemModel? SourceFolder
         {
             get => _sourceFolder;
@@ -45,6 +52,9 @@ namespace USortThis.Core.Models
                 OnPropertyChanged(nameof(SourceFolderPath));
             }
         }
+        /// <summary>
+        /// Gets or sets the destination folder for the transfer.
+        /// </summary>
         public FolderItemModel? DestinationFolder
         {
             get => _destinationFolder;
@@ -60,19 +70,55 @@ namespace USortThis.Core.Models
                 OnPropertyChanged(nameof(DestinationFolderPath));
             }
         }
+        /// <summary>
+        /// The collection of routing rules applied to files in this folder bridge.
+        /// </summary>
         public ObservableCollection<FilterRuleModel> Routes { get; } = [];
+        /// <summary>
+        /// Details of the file transfer operations.
+        /// </summary>
         public ObservableCollection<FileTransferDetailModel> TransferDetails { get; } = [];
+        /// <summary>
+        /// Indicates whether to move the source files to the destination after copying.
+        /// </summary>
         public bool MoveSourceAfterCopy { get; set; }
+        /// <summary>
+        /// The collection of file paths that have been dropped for transfer.
+        /// </summary>
         public ObservableCollection<string> DroppedPaths { get; } = [];
+        /// <summary>
+        /// The number of transfers pending.
+        /// </summary>
         public long PendingTransfers => Interlocked.Read(ref _pendingTransfers);
+        /// <summary>
+        /// The number of transfers completed.
+        /// </summary>
         public long CompletedTransfers => Interlocked.Read(ref _completedTransfers);
+        /// <summary>
+        /// The number of transfers that have failed.
+        /// </summary>
         public long FailedTransfers => Interlocked.Read(ref _failedTransfers);
+        /// <summary>
+        /// The total number of transfers (pending, completed, and failed).
+        /// </summary>
         public long TotalTransfers => PendingTransfers + CompletedTransfers + FailedTransfers;
+        /// <summary>
+        /// The file system path of the source folder.
+        /// </summary>
         public string SourceFolderPath => SourceFolder?.FolderPath ?? string.Empty;
+        /// <summary>
+        /// A description of the source, used for display purposes.
+        /// </summary>
         public string SourceDescription => string.IsNullOrWhiteSpace(SourceFolderPath)
             ? "Drop files or folders here"
             : SourceFolderPath;
+        /// <summary>
+        /// The file system path of the destination folder.
+        /// </summary>
         public string DestinationFolderPath => DestinationFolder?.FolderPath ?? string.Empty;
+        /// <summary>
+        /// The progress of the transfer operation, as a percentage.
+        /// </summary>
         public double Progress
         {
             get => _progress;
@@ -85,6 +131,9 @@ namespace USortThis.Core.Models
                 }
             }
         }
+        /// <summary>
+        /// A custom name for the folder bridge, used for identification.
+        /// </summary>
         public string CustomName
         {
             get => _customName;
@@ -98,6 +147,15 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FolderBridgeModel"/> class.
+        /// </summary>
+        /// <param name="id">The unique identifier for this folder bridge.</param>
+        /// <param name="customName">A custom name for the folder bridge.</param>
+        /// <param name="source">The source folder for file transfers.</param>
+        /// <param name="destination">The destination folder for file transfers.</param>
+        /// <param name="fileInfoService">The file system I/O service.</param>
+        /// <param name="databaseService">The database service for storing transfer history.</param>
         public FolderBridgeModel(long id, string customName, FolderItemModel? source, FolderItemModel? destination,
             IFileSystemIOService fileInfoService, IDatabaseService databaseService) : base(id)
         {
@@ -132,10 +190,23 @@ namespace USortThis.Core.Models
             if (sender == DestinationFolder) OnPropertyChanged(nameof(DestinationFolderPath));
         }
 
+        /// <summary>
+        /// Retrieves the filter rules applied to this folder bridge.
+        /// </summary>
+        /// <returns>A read-only list of filter rules.</returns>
         public IReadOnlyList<FilterRuleModel> GetFilterRules() => _filterRules.AsReadOnly();
 
+        /// <summary>
+        /// Resets the transfer statistics, setting pending, completed, and failed transfers to zero.
+        /// </summary>
         public void ResetTransferStatistics() => UpdateTransferStatistics(0, 0, 0);
 
+        /// <summary>
+        /// Updates the transfer statistics for pending, completed, and failed transfers.
+        /// </summary>
+        /// <param name="pending">The new pending transfers count.</param>
+        /// <param name="completed">The new completed transfers count.</param>
+        /// <param name="failed">The new failed transfers count.</param>
         public void UpdateTransferStatistics(long pending, long completed, long failed)
         {
             if (Interlocked.Exchange(ref _pendingTransfers, pending) != pending)
@@ -147,6 +218,10 @@ namespace USortThis.Core.Models
             OnPropertyChanged(nameof(TotalTransfers));
         }
 
+        /// <summary>
+        /// Restores the transfer history from a collection of file transfer details.
+        /// </summary>
+        /// <param name="details">The transfer details to restore.</param>
         public void RestoreTransferHistory(IEnumerable<FileTransferDetailModel> details)
         {
             TransferDetails.Clear();
@@ -158,6 +233,10 @@ namespace USortThis.Core.Models
                 TransferDetails.LongCount(detail => detail.Status == CopyStatus.Failed));
         }
 
+        /// <summary>
+        /// Persists a single transfer detail to the database.
+        /// </summary>
+        /// <param name="detail">The transfer detail to persist.</param>
         public void PersistTransferDetail(FileTransferDetailModel detail)
         {
             try
@@ -171,13 +250,18 @@ namespace USortThis.Core.Models
         }
 
         /// <summary>
-        /// Enumerate pending files from the SourceFolder and apply this bridge's filter rules.
+        /// Enumerates pending files from the SourceFolder and applies this bridge's filter rules.
         /// Returns a list of file paths that matched. This method is cancellation-aware and
         /// reports enumeration errors via the optional <paramref name="errors"/> reporter.
         /// Semantics: if there are no rules the file is included. If there are rules, all
         /// rules must match for the file to be included (AND across rules). Each rule itself
         /// evaluates its criteria with AND semantics.
         /// </summary>
+        /// <param name="fs">The file system service to use for file enumeration.</param>
+        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <param name="errors">An optional progress reporter for file enumeration errors.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a list of pending file paths.</returns>
+        /// <exception cref="OperationCanceledException">Thrown when the operation is canceled.</exception>
         public async Task<List<string>> GetPendingFilesAsync(IFileSystemIOService fs, CancellationToken cancellationToken, IProgress<FileEnumerationError>? errors = null)
         {
             var result = new List<string>();
@@ -233,6 +317,10 @@ namespace USortThis.Core.Models
             return result;
         }
 
+        /// <summary>
+        /// Adds a new routing rule to the folder bridge.
+        /// </summary>
+        /// <param name="rule">The routing rule to add.</param>
         public void AddRule(FilterRuleModel rule)
         {
             if (!Routes.Contains(rule))
@@ -242,6 +330,10 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Removes a routing rule from the folder bridge.
+        /// </summary>
+        /// <param name="rule">The routing rule to remove.</param>
         public void RemoveRule(FilterRuleModel rule)
         {
             if (Routes.Remove(rule))
@@ -250,6 +342,10 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Adds a file to the pending files collection for transfer.
+        /// </summary>
+        /// <param name="item">The file item to add to pending transfer.</param>
         public void AddPendingFile(FileItemModel item)
         {
             item.PropertyChanged += (s, e) =>
@@ -278,6 +374,9 @@ namespace USortThis.Core.Models
             };
         }
 
+        /// <summary>
+        /// Starts the asynchronous transfer of pending files to the destination.
+        /// </summary>
         public async void StartTransfersAsync()
         {
             while (_pendingFiles.Count > 0)
@@ -308,11 +407,20 @@ namespace USortThis.Core.Models
             _cancellationTokenSource.TryReset();
         }
 
+        /// <summary>
+        /// Stops the ongoing file transfer operation.
+        /// </summary>
         public void StopTransfer()
         {
             _cancellationTokenSource.Cancel();
         }
 
+        /// <summary>
+        /// Transfers a file from the source to the destination asynchronously.
+        /// </summary>
+        /// <param name="item">The file item representing the file to transfer.</param>
+        /// <param name="cancellationToken">A cancellation token to monitor for cancellation requests.</param>
+        /// <returns>A task that represents the asynchronous transfer operation.</returns>
         private Task TransferFileAsync(FileItemModel item, CancellationToken cancellationToken)
         {
             return Task.Run(async () =>

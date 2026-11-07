@@ -72,6 +72,11 @@ namespace USortThis.Core.Models
         }
         public double Progress => _folderBridges.Count == 0 ? 0 : _folderBridges.Average(b => b.Progress);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfileItemModel"/> class.
+        /// </summary>
+        /// <param name="id">The unique identifier for the profile.</param>
+        /// <param name="name">The name of the profile.</param>
         public ProfileItemModel(long id, string name) : base(id)
         {
             _name = name;
@@ -79,6 +84,12 @@ namespace USortThis.Core.Models
             _folderBridges = [];
         }
 
+        /// <summary>
+        /// Gets the bridge from the source and destination paths.
+        /// </summary>
+        /// <param name="sourceFolderPath">The source folder path.</param>
+        /// <param name="destinationFolderPath">The destination folder path.</param>
+        /// <returns>The <see cref="FolderBridgeModel"/> associated with the provided source and destination paths, or null if none found.</returns>
         public FolderBridgeModel? GetBridgeFromSourceAndDestinationPaths(string sourceFolderPath, string destinationFolderPath)
         {
             var bridge = _folderBridges.FirstOrDefault(b =>
@@ -88,6 +99,10 @@ namespace USortThis.Core.Models
             return bridge;
         }
 
+        /// <summary>
+        /// Adds the folder bridge to the profile.
+        /// </summary>
+        /// <param name="bridge">The folder bridge to add.</param>
         public void AddFolderBridge(FolderBridgeModel bridge)
         {
             try
@@ -101,6 +116,10 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Removes the folder bridge from the profile.
+        /// </summary>
+        /// <param name="bridge">The folder bridge to remove.</param>
         public void RemoveFolderBridge(FolderBridgeModel bridge)
         {
             try
@@ -114,8 +133,16 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets the list of folder bridges.
+        /// </summary>
+        /// <returns>A list of <see cref="FolderBridgeModel"/> objects associated with the profile.</returns>
         public List<FolderBridgeModel> GetFolderBridges() => _folderBridges;
 
+        /// <summary>
+        /// Replaces the folder bridges in the profile with the provided collection.
+        /// </summary>
+        /// <param name="bridges">The collection of folder bridges to replace the existing ones.</param>
         public void ReplaceFolderBridges(IEnumerable<FolderBridgeModel> bridges)
         {
             foreach (var bridge in _folderBridges.ToList())

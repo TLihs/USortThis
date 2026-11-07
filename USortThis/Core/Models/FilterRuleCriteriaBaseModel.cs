@@ -8,21 +8,38 @@ using USortThis.Core.Interfaces;
 
 namespace USortThis.Core.Models
 {
+    /// <summary>
+    /// Base class for filter rule criteria models.
+    /// </summary>
     public abstract class FilterRuleCriteriaBaseModel(long id) : ModelBase(id)
     {
-        // Returns true when the given file satisfies the criteria
+        /// <summary>
+        /// Returns true when the given file satisfies the criteria.
+        /// </summary>
+        /// <param name="file">The file item model to check.</param>
+        /// <returns>True if the file matches the criteria, otherwise false.</returns>
         public abstract bool Matches(FileItemModel file);
     }
 
+    /// <summary>
+    /// Filter rule criteria that matches all files (no filtering).
+    /// </summary>
     public class FilterRuleCriteriaModelNone(long id) : FilterRuleCriteriaBaseModel(id)
     {
+        /// <summary>
+        /// Always returns true, as "None" criteria means no filtering: everything matches.
+        /// </summary>
+        /// <param name="file">The file item model to check.</param>
+        /// <returns>True for all files.</returns>
         public override bool Matches(FileItemModel file)
         {
-            // "None" criteria means no filtering: everything matches
             return true;
         }
     }
 
+    /// <summary>
+    /// Filter rule criteria that matches files by their extension(s).
+    /// </summary>
     // Match by file extension(s). Extensions can be provided comma-separated (e.g. ".jpg,.png")
     public class FilterRuleCriteriaModelExtension : FilterRuleCriteriaBaseModel
     {
@@ -30,7 +47,9 @@ namespace USortThis.Core.Models
         private List<string> _parsedExtensions = [];
         private IFileSystemIOService _fileInfoService;
 
-        // Comma-separated list of extensions (with or without leading dot). Case-insensitive.
+        /// <summary>
+        /// Comma-separated list of extensions (with or without leading dot). Case-insensitive.
+        /// </summary>
         public string Extensions
         {
             get => _extensions;
@@ -45,6 +64,12 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterRuleCriteriaModelExtension"/> class.
+        /// </summary>
+        /// <param name="id">The identifier for the filter rule.</param>
+        /// <param name="extensions">The file extensions to match.</param>
+        /// <param name="fileInfoService">The file system I/O service.</param>
         public FilterRuleCriteriaModelExtension(long id, string extensions, IFileSystemIOService fileInfoService) : base(id)
         {
             _fileInfoService = fileInfoService;
@@ -60,6 +85,11 @@ namespace USortThis.Core.Models
                 .ToList() ?? [];
         }
 
+        /// <summary>
+        /// Matches the file if its extension is in the specified list of extensions.
+        /// </summary>
+        /// <param name="file">The file item model to check.</param>
+        /// <returns>True if the file's extension matches, otherwise false.</returns>
         public override bool Matches(FileItemModel file)
         {
             if (_parsedExtensions.Count == 0)
@@ -73,6 +103,9 @@ namespace USortThis.Core.Models
         }
     }
 
+    /// <summary>
+    /// Filter rule criteria that matches files by their name (not path).
+    /// </summary>
     // Match by file name (not path). Supports simple substring matching or optional regex.
     public class FilterRuleCriteriaModelFileName : FilterRuleCriteriaBaseModel
     {
@@ -80,6 +113,13 @@ namespace USortThis.Core.Models
         private bool _useRegex;
         private IFileSystemIOService _fileInfoService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterRuleCriteriaModelFileName"/> class.
+        /// </summary>
+        /// <param name="id">The identifier for the filter rule.</param>
+        /// <param name="pattern">The pattern used for matching file names.</param>
+        /// <param name="useRegex">Indicates whether to use regex for matching.</param>
+        /// <param name="fileInfoService">The file system I/O service.</param>
         public FilterRuleCriteriaModelFileName(long id, string pattern, bool useRegex, IFileSystemIOService fileInfoService) : base(id)
         {
             _fileInfoService = fileInfoService;
@@ -114,6 +154,11 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Matches the file if its name matches the specified pattern.
+        /// </summary>
+        /// <param name="file">The file item model to check.</param>
+        /// <returns>True if the file's name matches the pattern, otherwise false.</returns>
         public override bool Matches(FileItemModel file)
         {
             if (string.IsNullOrEmpty(Pattern))
@@ -155,6 +200,9 @@ namespace USortThis.Core.Models
         }
     }
 
+    /// <summary>
+    /// Filter rule criteria that matches files by their last write or creation time (minimum date).
+    /// </summary>
     // Match files with last write time (or creation time) >= MinDate
     public class FilterRuleCriteriaModelMinDate : FilterRuleCriteriaBaseModel
     {
@@ -162,6 +210,13 @@ namespace USortThis.Core.Models
         private bool _useCreationTime;
         private IFileSystemIOService _fileInfoService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterRuleCriteriaModelMinDate"/> class.
+        /// </summary>
+        /// <param name="id">The identifier for the filter rule.</param>
+        /// <param name="minDate">The minimum date for the last write or creation time.</param>
+        /// <param name="useCreationTime">Indicates whether to use creation time instead of last write time.</param>
+        /// <param name="fileInfoService">The file system I/O service.</param>
         public FilterRuleCriteriaModelMinDate(long id, DateTime minDate, bool useCreationTime, IFileSystemIOService fileInfoService) : base(id)
         {
             _fileInfoService = fileInfoService;
@@ -196,6 +251,11 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Matches the file if its last write or creation time is greater than or equal to the specified minimum date.
+        /// </summary>
+        /// <param name="file">The file item model to check.</param>
+        /// <returns>True if the file's time is greater than or equal to the minimum date, otherwise false.</returns>
         public override bool Matches(FileItemModel file)
         {
             DateTime dt;
@@ -226,6 +286,9 @@ namespace USortThis.Core.Models
         }
     }
 
+    /// <summary>
+    /// Filter rule criteria that matches files by their last write or creation time (maximum date).
+    /// </summary>
     // Match files with last write time (or creation time) <= MaxDate
     public class FilterRuleCriteriaModelMaxDate : FilterRuleCriteriaBaseModel
     {
@@ -233,6 +296,13 @@ namespace USortThis.Core.Models
         private bool _useCreationTime;
         private IFileSystemIOService _fileInfoService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterRuleCriteriaModelMaxDate"/> class.
+        /// </summary>
+        /// <param name="id">The identifier for the filter rule.</param>
+        /// <param name="maxDate">The maximum date for the last write or creation time.</param>
+        /// <param name="useCreationTime">Indicates whether to use creation time instead of last write time.</param>
+        /// <param name="fileInfoService">The file system I/O service.</param>
         public FilterRuleCriteriaModelMaxDate(long id, DateTime maxDate, bool useCreationTime, IFileSystemIOService fileInfoService) : base(id)
         {
             _fileInfoService = fileInfoService;
@@ -267,6 +337,11 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Matches the file if its last write or creation time is less than or equal to the specified maximum date.
+        /// </summary>
+        /// <param name="file">The file item model to check.</param>
+        /// <returns>True if the file's time is less than or equal to the maximum date, otherwise false.</returns>
         public override bool Matches(FileItemModel file)
         {
             DateTime dt;

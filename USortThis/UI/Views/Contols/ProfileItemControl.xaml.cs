@@ -22,11 +22,19 @@ namespace USortThis.UI.Views.Controls
     /// </summary>
     public partial class ProfileItemControl : System.Windows.Controls.UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfileItemControl"/> class.
+        /// </summary>
         public ProfileItemControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Handles the Drop event on the RootBorder.
+        /// </summary>
+        /// <param name="sender">The source of the event, in this case, the RootBorder.</param>
+        /// <param name="e">The data of the event, containing the drop information.</param>
         private void RootBorder_Drop(object sender, System.Windows.DragEventArgs e)
         {
             var viewModel = DataContext as ProfileItemViewModel;

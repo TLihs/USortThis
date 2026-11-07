@@ -9,6 +9,9 @@ using USortThis.Core.Models;
 
 namespace USortThis.Core.Services
 {
+    /// <summary>
+    /// Service responsible for sorting files based on user profiles and rules.
+    /// </summary>
     public class SortingService : ISortingService
     {
         private sealed class BridgeRunStatistics
@@ -22,11 +25,24 @@ namespace USortThis.Core.Services
 
         private readonly IFileSystemIOService _fs;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SortingService"/> class.
+        /// </summary>
+        /// <param name="fileSystemIOService">The file system IO service.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="fileSystemIOService"/> is null.</exception>
         public SortingService(IFileSystemIOService fileSystemIOService)
         {
             _fs = fileSystemIOService ?? throw new ArgumentNullException(nameof(fileSystemIOService));
         }
 
+        /// <summary>
+        /// Previews the file transfers that would occur based on the provided profile.
+        /// </summary>
+        /// <param name="profile">The profile determining the transfer rules.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <param name="enumerationErrors">A progress reporter for file enumeration errors.</param>
+        /// <returns>A task that represents the asynchronous operation, containing the list of preview entries.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="profile"/> is null.</exception>
         public async Task<IReadOnlyList<TransferPreviewEntry>> PreviewAsync(ProfileItemModel profile, CancellationToken ct,
             IProgress<FileEnumerationError>? enumerationErrors = null)
         {
@@ -107,6 +123,15 @@ namespace USortThis.Core.Services
             return results;
         }
 
+        /// <summary>
+        /// Retries a failed file transfer.
+        /// </summary>
+        /// <param name="bridge">The bridge containing the transfer details.</param>
+        /// <param name="detail">The transfer detail to retry.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="bridge"/> or <paramref name="detail"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the transfer is not in a failed state.</exception>
+        /// <exception cref="IOException">Thrown when the source and destination paths are the same.</exception>
         public async Task RetryAsync(FolderBridgeModel bridge, FileTransferDetailModel detail, CancellationToken ct)
         {
             ArgumentNullException.ThrowIfNull(bridge);
@@ -173,6 +198,7 @@ namespace USortThis.Core.Services
             PublishRetryStatistics(bridge, notificationContext);
         }
 
+        // Update the transfer statistics for a bridge and notify the UI.
         private static void PublishRetryStatistics(FolderBridgeModel bridge, SynchronizationContext? notificationContext)
         {
             void Update() => bridge.UpdateTransferStatistics(
@@ -186,6 +212,16 @@ namespace USortThis.Core.Services
                 Update();
         }
 
+        /// <summary>
+        /// Starts the sorting process based on the provided profile.
+        /// </summary>
+        /// <param name="profile">The profile determining the transfer rules.</param>
+        /// <param name="progress">A progress reporter for overall progress.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <param name="enumerationErrors">A progress reporter for file enumeration errors.</param>
+        /// <param name="resolveConflict">A function to resolve conflicts when they occur.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="profile"/> is null.</exception>
         public async Task StartAsync(ProfileItemModel profile, IProgress<int> progress, CancellationToken ct, IProgress<FileEnumerationError>? enumerationErrors = null,
             Func<string, string, Task<ProfileItemModel.ConflictHandlingMode>>? resolveConflict = null)
         {
@@ -585,6 +621,7 @@ namespace USortThis.Core.Services
             progress.Report(100);
         }
 
+        // Update the transfer statistics for a bridge and notify the UI.
         private static void PublishStatistics(FolderBridgeModel bridge, BridgeRunStatistics statistics, SynchronizationContext? notificationContext)
         {
             void Update() => bridge.UpdateTransferStatistics(statistics.Pending, statistics.Completed, statistics.Failed);
@@ -594,6 +631,7 @@ namespace USortThis.Core.Services
                 Update();
         }
 
+        // Update the progress percentage for a bridge and notify the UI.
         private static void PublishProgress(FolderBridgeModel bridge, double value, SynchronizationContext? notificationContext)
         {
             void Update() => bridge.Progress = Math.Clamp(value, 0, 100);
@@ -606,6 +644,7 @@ namespace USortThis.Core.Services
         private static FileTransferDetailModel GetOrAddTransferDetail(FolderBridgeModel bridge, string sourcePath, string destinationFilePath, string relativePath, SynchronizationContext? notificationContext)
         {
             FileTransferDetailModel? detail = null;
+            // Gets or adds a transfer detail for the specified source and destination paths.
             void GetOrAdd()
             {
                 detail = bridge.TransferDetails.FirstOrDefault(item =>
@@ -625,6 +664,7 @@ namespace USortThis.Core.Services
             return detail!;
         }
 
+        // Publishes the transfer detail update to the bridge and the notification context.
         private static void PublishTransferDetail(FolderBridgeModel bridge, FileTransferDetailModel detail, FileItemModel.CopyStatus status, double progress, string failureReason, SynchronizationContext? notificationContext, bool persist = true)
         {
             void Update()

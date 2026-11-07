@@ -14,6 +14,10 @@ namespace USortThis.Core.Models
     {
         public long Id { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModelBase"/> class.
+        /// </summary>
+        /// <param name="id">The unique identifier for the model.</param>
         public ModelBase(long id)
         {
             Id = id;

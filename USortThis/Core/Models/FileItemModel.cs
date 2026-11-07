@@ -9,8 +9,14 @@ using USortThis.UI.Views.Controls;
 
 namespace USortThis.Core.Models
 {
+    /// <summary>
+    /// Represents a file item with properties for file handling and transfer status.
+    /// </summary>
     public class FileItemModel : ModelBase
     {
+        /// <summary>
+        /// Enum representing the status of a copy operation.
+        /// </summary>
         public enum CopyStatus
         {
             Pending,
@@ -19,6 +25,9 @@ namespace USortThis.Core.Models
             Failed
         }
 
+        /// <summary>
+        /// Enum representing the reasons for a copy operation failure.
+        /// </summary>
         public enum FailedReason
         {
             None,
@@ -30,6 +39,11 @@ namespace USortThis.Core.Models
             Unknown
         }
 
+        /// <summary>
+        /// Converts the <see cref="CopyStatus"/> enum to a string representation.
+        /// </summary>
+        /// <param name="status">The copy status.</param>
+        /// <returns>A string representing the copy status.</returns>
         public static string StatusToString(CopyStatus status)
         {
             return status switch
@@ -42,6 +56,11 @@ namespace USortThis.Core.Models
             };
         }
 
+        /// <summary>
+        /// Converts the <see cref="FailedReason"/> enum to a string representation.
+        /// </summary>
+        /// <param name="reason">The failure reason.</param>
+        /// <returns>A string representing the failure reason.</returns>
         public static string FailedReasonToString(FailedReason reason)
         {
             return reason switch
@@ -65,6 +84,9 @@ namespace USortThis.Core.Models
         private CopyStatus _copyStatus;
         private FailedReason _failedReason;
 
+        /// <summary>
+        /// Gets or sets the file path.
+        /// </summary>
         public string FilePath
         {
             get => _filePath;
@@ -77,6 +99,9 @@ namespace USortThis.Core.Models
                 }
             }
         }
+        /// <summary>
+        /// Gets or sets the file creation time.
+        /// </summary>
         public DateTime CreationTime
         {
             get => _creationTime;
@@ -89,6 +114,9 @@ namespace USortThis.Core.Models
                 }
             }
         }
+        /// <summary>
+        /// Gets or sets the last write time of the file.
+        /// </summary>
         public DateTime LastWriteTime
         {
             get => _lastWriteTime;
@@ -101,6 +129,9 @@ namespace USortThis.Core.Models
                 }
             }
         }
+        /// <summary>
+        /// Gets or sets the file size.
+        /// </summary>
         public long FileSize
         {
             get => _fileSize;
@@ -113,6 +144,9 @@ namespace USortThis.Core.Models
                 }
             }
         }
+        /// <summary>
+        /// Gets or sets the progress of the copy operation.
+        /// </summary>
         public double Progress
         {
             get => _progress;
@@ -125,6 +159,9 @@ namespace USortThis.Core.Models
                 }
             }
         }
+        /// <summary>
+        /// Gets or sets the status of the copy operation.
+        /// </summary>
         public CopyStatus Status
         {
             get => _copyStatus;
@@ -138,6 +175,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets or sets the reason for a copy operation failure.
+        /// </summary>
         public FailedReason FailureReason
         {
             get => _failedReason;
@@ -151,6 +191,16 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileItemModel"/> class.
+        /// </summary>
+        /// <param name="id">The unique identifier for the model.</param>
+        /// <param name="filePath">The path of the file.</param>
+        /// <param name="fileSize">The size of the file.</param>
+        /// <param name="createTime">The creation time of the file.</param>
+        /// <param name="lastWriteTime">The last write time of the file.</param>
+        /// <param name="copyStatus">The initial copy status of the file.</param>
+        /// <param name="failedReason">The initial failure reason, if any.</param>
         public FileItemModel(long id, string filePath, long fileSize, DateTime createTime, DateTime lastWriteTime,
             CopyStatus copyStatus = CopyStatus.Pending, FailedReason failedReason = FailedReason.None) : base(id)
         {

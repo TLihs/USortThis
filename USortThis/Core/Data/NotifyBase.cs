@@ -12,6 +12,8 @@ namespace USortThis.Core.Data
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>Raises <see cref="PropertyChanged"/> for the specified property.</summary>
+        /// <param name="propertyName">The property name, inferred from the caller when omitted.</param>
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

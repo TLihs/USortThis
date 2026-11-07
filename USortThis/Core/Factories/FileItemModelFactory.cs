@@ -12,11 +12,17 @@ namespace USortThis.Core.Factories
     {
         private readonly IFileSystemIOService _fileInfoService;
         
+        /// <summary>Initializes the factory with identifier and file-system services.</summary>
+        /// <param name="idFactory">The source of file-model identifiers.</param>
+        /// <param name="fileInfoService">The service used to read file metadata.</param>
         public FileItemModelFactory(IIdFactory idFactory, IFileSystemIOService fileInfoService) : base(idFactory)
         {
             _fileInfoService = fileInfoService;
         }
 
+        /// <summary>Creates a file model using the path and metadata read from the file system.</summary>
+        /// <param name="filePath">The path of the file to represent.</param>
+        /// <returns>A model populated with a new identifier and current file metadata.</returns>
         public FileItemModel Create(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
@@ -28,6 +34,14 @@ namespace USortThis.Core.Factories
             return new(_idFactory.CreateId(), filePath, fileSize, creationTime, lastWriteTime);
         }
 
+        /// <summary>Reconstructs a file model from persisted values.</summary>
+        /// <param name="id">The persisted file identifier.</param>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="fileSize">The file size in bytes.</param>
+        /// <param name="creationTime">The file creation time.</param>
+        /// <param name="lastWriteTime">The file's last-write time.</param>
+        /// <param name="status">The persisted transfer status value.</param>
+        /// <param name="failedReason">The persisted failure reason value.</param>
         public FileItemModel LoadFromDatabase(long id, string filePath, long fileSize, DateTime creationTime, DateTime lastWriteTime, int status, int failedReason)
         {
             var parsedStatus = (FileItemModel.CopyStatus)status;

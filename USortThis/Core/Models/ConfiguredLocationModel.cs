@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace USortThis.Core.Models
 {
+    /// <summary>
+    /// Represents a user-configured location, such as a folder or a network drive.
+    /// </summary>
     public class ConfiguredLocationModel : ModelBase
     {
         private string _label;
@@ -24,6 +27,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets the type of the location (e.g., Network, Usb, Local, Folder).
+        /// </summary>
         public string LocationType
         {
             get
@@ -42,6 +48,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets the display label for the location type.
+        /// </summary>
         public string LocationTypeLabel => LocationType switch
         {
             "Usb" => "USB",
@@ -49,6 +58,9 @@ namespace USortThis.Core.Models
             var type => type
         };
 
+        /// <summary>
+        /// Gets or sets the file system path of the location.
+        /// </summary>
         public string Path
         {
             get => _path;
@@ -62,6 +74,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets or sets the username for accessing the location, if required.
+        /// </summary>
         public string Username
         {
             get => _username;
@@ -73,6 +88,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets or sets the domain for accessing the location, if required.
+        /// </summary>
         public string Domain
         {
             get => _domain;
@@ -84,6 +102,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to use the current Windows credentials for accessing the location.
+        /// </summary>
         public bool UseCurrentWindowsCredentials
         {
             get => _useCurrentWindowsCredentials;
@@ -95,6 +116,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the location is currently connected and available.
+        /// </summary>
         public bool IsConnected
         {
             get => _isConnected;

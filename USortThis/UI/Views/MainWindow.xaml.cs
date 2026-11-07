@@ -29,6 +29,9 @@ namespace USortThis.UI.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -37,24 +40,44 @@ namespace USortThis.UI.Views
             DataContextChanged += MainWindow_DataContextChanged;
         }
 
+        /// <summary>
+        /// Handles the click event for the Add Location button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void AddLocation_Click(object sender, RoutedEventArgs e)
         {
             if (DataContext is MainWindowViewModel viewModel)
                 viewModel.AddConfiguredLocation();
         }
 
+        /// <summary>
+        /// Handles the click event for the Edit Location button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void EditLocation_Click(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement { DataContext: ConfiguredLocationModel location } && DataContext is MainWindowViewModel viewModel)
                 viewModel.EditConfiguredLocation(location);
         }
 
+        /// <summary>
+        /// Handles the click event for the Remove Location button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void RemoveLocation_Click(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement { DataContext: ConfiguredLocationModel location } && DataContext is MainWindowViewModel viewModel)
                 viewModel.RemoveConfiguredLocation(location);
         }
 
+        /// <summary>
+        /// Handles the click event for the Test Location button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void TestLocation_Click(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement { DataContext: ConfiguredLocationModel location } && DataContext is MainWindowViewModel viewModel)
@@ -62,6 +85,11 @@ namespace USortThis.UI.Views
                     location.IsConnected ? MessageBoxImage.Information : MessageBoxImage.Warning);
         }
 
+        /// <summary>
+        /// Handles changes to the DataContext, updating the ViewModel and device list as necessary.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void MainWindow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             Debug.Print(nameof(MainWindow) + "::MainWindow_DataContextChanged(..)");
@@ -105,17 +133,32 @@ namespace USortThis.UI.Views
             }
         }
 
+        /// <summary>
+        /// Updates the device list when the underlying collection changes.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void DeviceList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (DataContext is MainWindowViewModel viewModel)
                 viewModel.RefreshLocationItems();
         }
 
+        /// <summary>
+        /// Closes the application when requested by the ViewModel.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void OnViewModelRequestClose(object? sender, EventArgs e)
         {
             Dispatcher.Invoke(() => (System.Windows.Application.Current as App)?.ExitApplication());
         }
 
+        /// <summary>
+        /// Handles the click event for the Save menu item, saving profiles asynchronously.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private async void Menu_Save_Click(object sender, RoutedEventArgs e)
         {
             //try
@@ -133,6 +176,11 @@ namespace USortThis.UI.Views
             //}
         }
 
+        /// <summary>
+        /// Handles the click event for the Exit menu item, closing the application.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void Menu_Exit_Click(object sender, RoutedEventArgs e)
         {
             // Prefer the ViewModel command which triggers the RequestClose event
@@ -148,22 +196,42 @@ namespace USortThis.UI.Views
             }
         }
 
+        /// <summary>
+        /// Handles the click event for the Undo menu item, triggering an undo operation if implemented.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void Menu_Undo_Click(object sender, RoutedEventArgs e)
         {
             SetStatus("Undo is not implemented.", 3000);
         }
 
+        /// <summary>
+        /// Handles the click event for the Redo menu item, triggering a redo operation if implemented.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void Menu_Redo_Click(object sender, RoutedEventArgs e)
         {
             SetStatus("Redo is not implemented.", 3000);
         }
 
+        /// <summary>
+        /// Handles the click event for the Generate Test File menu item, opening the test file generator dialog.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void Menu_GenerateTestFile_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new TestFileGeneratorWindow { Owner = this };
             dialog.ShowDialog();
         }
 
+        /// <summary>
+        /// Handles the click event for the About menu item, displaying the About dialog if available.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void Menu_About_Click(object sender, RoutedEventArgs e)
         {
             //var asm = Assembly.GetEntryAssembly();
@@ -176,7 +244,11 @@ namespace USortThis.UI.Views
             }
         }
 
-        // Update status bar content in a non-blocking fashion; optionally clear after timeout
+        /// <summary>
+        /// Updates the status bar content in a non-blocking fashion, optionally clearing it after a timeout.
+        /// </summary>
+        /// <param name="message">The status message to display.</param>
+        /// <param name="timeoutMs">The timeout in milliseconds after which to clear the message (optional).</param>
         private void SetStatus(string message, int timeoutMs = 5000)
         {
             try

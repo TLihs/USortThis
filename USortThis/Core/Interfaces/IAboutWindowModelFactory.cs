@@ -10,6 +10,7 @@ namespace USortThis.Core.Interfaces
 {
     public interface IAboutWindowModelFactory
     {
+        /// <summary>Creates the model used to populate the About window.</summary>
         public AboutWindowModel Create();
     }
 }

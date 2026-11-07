@@ -11,6 +11,9 @@ namespace USortThis.Core.Factories
     {
         protected readonly IIdFactory _idFactory;
 
+        /// <summary>Initializes the base factory with the identifier generator used by derived factories.</summary>
+        /// <param name="idFactory">The source of model identifiers.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="idFactory"/> is null.</exception>
         protected BaseIdModelFactory(IIdFactory idFactory)
         {
             _idFactory = idFactory ?? throw new ArgumentNullException(nameof(idFactory));

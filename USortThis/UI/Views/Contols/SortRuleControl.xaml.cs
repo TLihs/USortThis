@@ -20,6 +20,9 @@ namespace USortThis.UI.Views.Contols
     /// </summary>
     public partial class SortRuleControl : System.Windows.Controls.UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SortRuleControl"/> class.
+        /// </summary>
         public SortRuleControl()
         {
             InitializeComponent();

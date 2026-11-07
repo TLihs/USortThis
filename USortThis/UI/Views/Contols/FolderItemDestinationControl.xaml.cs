@@ -22,11 +22,19 @@ namespace USortThis.UI.Views.Controls
     /// </summary>
     public partial class FolderItemDestinationControl : System.Windows.Controls.UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FolderItemDestinationControl"/> class.
+        /// </summary>
         public FolderItemDestinationControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Handles the DragOver event of the UserControl control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
         private void UserControl_DragOver(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
@@ -37,6 +45,11 @@ namespace USortThis.UI.Views.Controls
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Handles the Drop event of the UserControl control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.Windows.DragEventArgs"/> instance containing the event data.</param>
         private void UserControl_Drop(object sender, System.Windows.DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))

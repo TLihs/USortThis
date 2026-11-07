@@ -21,11 +21,19 @@ namespace USortThis.UI.Views.Controls
     /// </summary>
     public partial class FolderItemBridgeControl : System.Windows.Controls.UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FolderItemBridgeControl"/> class.
+        /// </summary>
         public FolderItemBridgeControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Called when an unhandled drag-and-drop operation enters this element.
+        /// </summary>
+        /// <param name="sender">The source of the event, typically the border element.</param>
+        /// <param name="e">The drag event data.</param>
         private void RootBorder_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
@@ -35,6 +43,11 @@ namespace USortThis.UI.Views.Controls
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Called when an unhandled drag-and-drop operation is dragged over this element.
+        /// </summary>
+        /// <param name="sender">The source of the event, typically the border element.</param>
+        /// <param name="e">The drag event data.</param>
         private void RootBorder_DragOver(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
@@ -44,6 +57,12 @@ namespace USortThis.UI.Views.Controls
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Called when an unhandled drag-and-drop operation is dropped onto this element.
+        /// Updates the underlying model by adding dropped file or folder paths to the bridge.
+        /// </summary>
+        /// <param name="sender">The source of the event, typically the border element.</param>
+        /// <param name="e">The drag event data.</param>
         private void RootBorder_Drop(object sender, System.Windows.DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop)) return;

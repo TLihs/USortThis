@@ -14,6 +14,11 @@ using USortThis.Core.Interfaces;
 
 namespace USortThis.Core.Services
 {
+    /// <summary>
+    /// Provides database services for USortThis, including methods for initializing the database,
+    /// saving and loading profiles, rules, and other entities, and executing queries and commands
+    /// against the database.
+    /// </summary>
     public class DatabaseService : IDatabaseService
     {
         private const string DatabaseFileName = "USortThis.db";
@@ -45,6 +50,13 @@ namespace USortThis.Core.Services
         private readonly IFolderBridgeModelFactory _folderBridgeModelFactory;
         private readonly IFileItemModelFactory _fileItemModelFactory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatabaseService"/> class.
+        /// </summary>
+        /// <param name="filterRuleCriteriaFactory">The filter rule criteria factory.</param>
+        /// <param name="folderItemModelFactory">The folder item model factory.</param>
+        /// <param name="folderBridgeModelFactory">The folder bridge model factory.</param>
+        /// <param name="fileItemModelFactory">The file item model factory.</param>
         public DatabaseService(IFilterRuleCriteriaFactory filterRuleCriteriaFactory, IFolderItemModelFactory folderItemModelFactory, IFolderBridgeModelFactory folderBridgeModelFactory, IFileItemModelFactory fileItemModelFactory)
         {
             _filterRuleCriteriaFactory = filterRuleCriteriaFactory;
@@ -53,6 +65,12 @@ namespace USortThis.Core.Services
             _fileItemModelFactory = fileItemModelFactory;
         }
 
+        /// <summary>
+        /// Saves the bridge route for the specified profile and filter rule.
+        /// </summary>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <param name="bridge">The folder bridge model.</param>
+        /// <param name="route">The filter rule model.</param>
         public void SaveBridgeRoute(long profileId, FolderBridgeModel bridge, FilterRuleModel route)
         {
             SaveFilterRule(profileId.ToString(), route);
@@ -79,6 +97,10 @@ namespace USortThis.Core.Services
 
         }
 
+        /// <summary>
+        /// Saves the rule criteria for the specified filter rule route.
+        /// </summary>
+        /// <param name="route">The filter rule model.</param>
         private void SaveRuleCriteriaForRoute(FilterRuleModel route)
         {
             using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
@@ -109,6 +131,11 @@ namespace USortThis.Core.Services
             transaction.Commit();
         }
 
+        /// <summary>
+        /// Saves the specified bridges for the given profile.
+        /// </summary>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <param name="bridges">The collection of folder bridge models to save.</param>
         public void SaveProfileBridges(long profileId, IEnumerable<FolderBridgeModel> bridges)
         {
             var bridgeList = bridges.ToList();
@@ -154,6 +181,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Saves the specified folder bridge for the given profile.
+        /// </summary>
+        /// <param name="bridge">The folder bridge model to save.</param>
+        /// <param name="profileId">The profile identifier.</param>
         private void SaveBridge(FolderBridgeModel bridge, long profileId)
         {
             if (bridge.SourceFolder != null)
@@ -175,6 +207,10 @@ namespace USortThis.Core.Services
             command.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Gets the path to the database file.
+        /// </summary>
+        /// <returns>The database file path.</returns>
         public string GetDatabasePath()
         {
             string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -185,6 +221,10 @@ namespace USortThis.Core.Services
             return Path.Combine(appFolder, DatabaseFileName);
         }
 
+        /// <summary>
+        /// Initializes the database, creating the schema and tables if they do not exist.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task InitializeAsync()
         {
             string dbPath = GetDatabasePath();
@@ -335,7 +375,7 @@ namespace USortThis.Core.Services
                     await connection.DisposeAsync().ConfigureAwait(false);
                     await RecreateDatabaseAsync(dbPath).ConfigureAwait(false);
 
-// Re-open and create schema on fresh DB
+                    // Re-open and create schema on fresh DB
                     using var conn2 = new SqliteConnection(connectionString);
                     await conn2.OpenAsync().ConfigureAwait(false);
                     await CreateSchemaAsync(conn2).ConfigureAwait(false);
@@ -462,6 +502,11 @@ namespace USortThis.Core.Services
             await ExecuteNonQueryAsync(connection, createIndexes).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Loads the transfer history for the specified bridge identifier.
+        /// </summary>
+        /// <param name="bridgeId">The bridge identifier.</param>
+        /// <returns>A list of file transfer detail models representing the transfer history.</returns>
         public List<FileTransferDetailModel> LoadTransferHistory(long bridgeId)
         {
             var details = new List<FileTransferDetailModel>();
@@ -491,6 +536,11 @@ namespace USortThis.Core.Services
             return details;
         }
 
+        /// <summary>
+        /// Saves the transfer history for the specified bridge identifier and file transfer detail model.
+        /// </summary>
+        /// <param name="bridgeId">The bridge identifier.</param>
+        /// <param name="detail">The file transfer detail model.</param>
         public void SaveTransferHistory(long bridgeId, FileTransferDetailModel detail)
         {
             ArgumentNullException.ThrowIfNull(detail);
@@ -513,6 +563,10 @@ namespace USortThis.Core.Services
             command.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Deletes the transfer history for the specified bridge identifier.
+        /// </summary>
+        /// <param name="bridgeId">The bridge identifier.</param>
         public void DeleteTransferHistory(long bridgeId)
         {
             using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
@@ -527,6 +581,10 @@ namespace USortThis.Core.Services
             command.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Loads the configured locations from the database.
+        /// </summary>
+        /// <returns>A list of configured location models.</returns>
         public List<ConfiguredLocationModel> LoadConfiguredLocations()
         {
             var locations = new List<ConfiguredLocationModel>();
@@ -555,6 +613,10 @@ namespace USortThis.Core.Services
             return locations;
         }
 
+        /// <summary>
+        /// Saves the specified configured location to the database.
+        /// </summary>
+        /// <param name="location">The configured location model to save.</param>
         public void SaveConfiguredLocation(ConfiguredLocationModel location)
         {
             ArgumentNullException.ThrowIfNull(location);
@@ -575,6 +637,10 @@ namespace USortThis.Core.Services
             command.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Deletes the configured location with the specified identifier.
+        /// </summary>
+        /// <param name="locationId">The location identifier.</param>
         public void DeleteConfiguredLocation(long locationId)
         {
             using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
@@ -658,6 +724,12 @@ namespace USortThis.Core.Services
             await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Saves the specified profile data to the Profiles table in the database.
+        /// </summary>
+        /// <param name="profile">The profile data to save.</param>
+        /// <returns><c>true</c> if the operation succeeded; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="profile"/> is null.</exception>
         public bool SaveDataToProfilesTable(ProfileItemModel profile)
         {
             if (profile is null)
@@ -750,6 +822,9 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Loads data from the Profiles table in the database into the application model.
+        /// </summary>
         public void LoadDataFromProfilesTable()
         {
             string dbPath = GetDatabasePath();
@@ -801,6 +876,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Loads the bridges for the specified profile identifier.
+        /// </summary>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <returns>A list of folder bridge models associated with the profile.</returns>
         public List<FolderBridgeModel> LoadBridgesForProfile(long profileId)
         {
             var bridges = new List<FolderBridgeModel>();
@@ -908,6 +988,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Deletes the profile with the specified identifier, including all associated rules, bridges, and transfer history.
+        /// </summary>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="profileId"/> is null or whitespace.</exception>
         public void DeleteProfile(string profileId)
         {
             if (string.IsNullOrWhiteSpace(profileId))
@@ -988,6 +1073,9 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Loads data from the Devices table in the database into the application model.
+        /// </summary>
         public void LoadDataFromInterfaceDeviceTable()
         {
             string dbPath = GetDatabasePath();
@@ -1016,6 +1104,11 @@ namespace USortThis.Core.Services
             connection.Close();
         }
 
+        /// <summary>
+        /// Saves the specified filter rule for the given profile identifier.
+        /// </summary>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <param name="rule">The filter rule model to save.</param>
         public void SaveFilterRule(string profileId, FilterRuleModel rule)
         {
             ArgumentNullException.ThrowIfNull(rule);
@@ -1128,6 +1221,11 @@ namespace USortThis.Core.Services
             return string.Empty;
         }
 
+        /// <summary>
+        /// Loads the rules for the specified profile identifier.
+        /// </summary>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <returns>A list of filter rule models associated with the profile.</returns>
         public List<FilterRuleModel> LoadRulesForProfile(long profileId)
         {
             var result = new List<FilterRuleModel>();
@@ -1162,6 +1260,10 @@ namespace USortThis.Core.Services
             return result;
         }
 
+        /// <summary>
+        /// Deletes the rule with the specified identifier.
+        /// </summary>
+        /// <param name="ruleId">The rule identifier.</param>
         public void DeleteRule(string ruleId)
         {
             if (string.IsNullOrWhiteSpace(ruleId)) return;
@@ -1316,6 +1418,10 @@ namespace USortThis.Core.Services
             return null;
         }
 
+        /// <summary>
+        /// Saves the specified folder item to the database.
+        /// </summary>
+        /// <param name="folder">The folder item model to save.</param>
         public void SaveFolder(FolderItemModel folder)
         {
             ArgumentNullException.ThrowIfNull(folder);
@@ -1370,6 +1476,9 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Loads data from the FolderItems table in the database into the application model.
+        /// </summary>
         public void LoadDataFromFolderItemsTable()
         {
             string dbPath = GetDatabasePath();
@@ -1398,6 +1507,13 @@ namespace USortThis.Core.Services
             connection.Close();
         }
 
+        /// <summary>
+        /// Saves the specified profile asynchronously, including its rules and folder bridges.
+        /// </summary>
+        /// <param name="profile">The profile data to save.</param>
+        /// <param name="batchSize">The batch size for processing rules and bridges. Default is 200.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="profile"/> is null.</exception>
         public async Task SaveProfileAsync(ProfileItemModel profile, int batchSize = 200)
         {
             if (profile is null)
@@ -1619,6 +1735,11 @@ namespace USortThis.Core.Services
         }
 
         // Save or update a copy queue record (synchronous)
+        /// <summary>
+        /// Saves or updates a copy queue record in the database.
+        /// </summary>
+        /// <param name="record">The copy queue record to save or update.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="record"/> is null.</exception>
         public void SaveOrUpdateCopyQueueRecord(CopyQueueRecord record)
         {
             ArgumentNullException.ThrowIfNull(record);
@@ -1690,6 +1811,10 @@ namespace USortThis.Core.Services
         }
 
         // Load pending/in-progress copy queue items
+        /// <summary>
+        /// Loads the pending and in-progress file items from the copy queue.
+        /// </summary>
+        /// <returns>A list of copy queue records representing the pending file items.</returns>
         public List<CopyQueueRecord> LoadPendingFileItems()
         {
             var list = new List<CopyQueueRecord>();
@@ -1728,6 +1853,12 @@ namespace USortThis.Core.Services
             return list;
         }
 
+        /// <summary>
+        /// Updates the status and failure reason of the copy queue record with the specified queue identifier.
+        /// </summary>
+        /// <param name="queueId">The queue identifier.</param>
+        /// <param name="status">The new status value.</param>
+        /// <param name="failureReason">The new failure reason value.</param>
         public void UpdateCopyQueueRecordStatus(long queueId, int status, int failureReason)
         {
             string dbPath = GetDatabasePath();
@@ -1751,6 +1882,10 @@ namespace USortThis.Core.Services
             connection.Close();
         }
 
+        /// <summary>
+        /// Deletes the copy queue record with the specified queue identifier.
+        /// </summary>
+        /// <param name="queueId">The queue identifier.</param>
         public void DeleteCopyQueueRecord(long queueId)
         {
             string dbPath = GetDatabasePath();

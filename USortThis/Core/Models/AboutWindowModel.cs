@@ -9,9 +9,19 @@ using System.Threading.Tasks;
 
 namespace USortThis.Core.Models
 {
+    /// <summary>
+    /// Model for the About window, providing application information such as name, version, copyright, and author.
+    /// </summary>
     public class AboutWindowModel : ModelBase
     {
+        /// <summary>
+        /// Gets the name of the application.
+        /// </summary>
         public string ApplicationName => "USortThis";
+
+        /// <summary>
+        /// Gets the version of the application, preferring the informational version if present.
+        /// </summary>
         public string Version
         {
             get
@@ -44,6 +54,10 @@ namespace USortThis.Core.Models
                 return "Unknown";
             }
         }
+
+        /// <summary>
+        /// Gets the copyright information for the application.
+        /// </summary>
         public string Copyright
         {
             get
@@ -58,6 +72,10 @@ namespace USortThis.Core.Models
                 return string.Empty;
             }
         }
+
+        /// <summary>
+        /// Gets the author or company information for the application.
+        /// </summary>
         public string Author
         {
             get
@@ -73,6 +91,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AboutWindowModel"/> class.
+        /// </summary>
         public AboutWindowModel() : base(0)
         {
 

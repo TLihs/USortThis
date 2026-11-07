@@ -6,16 +6,27 @@ using USortThis.Core.Models;
 
 namespace USortThis.UI.Views.Controls
 {
+    /// <summary>
+    /// Interaction logic for DeviceStatusControl.xaml
+    /// </summary>
     public partial class DeviceStatusControl : System.Windows.Controls.UserControl
     {
         private DeviceModel? _boundDevice;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeviceStatusControl"/> class.
+        /// </summary>
         public DeviceStatusControl()
         {
             InitializeComponent();
             this.DataContextChanged += DeviceStatusControl_DataContextChanged;
         }
 
+        /// <summary>
+        /// Event handler that is called when the data context changes.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void DeviceStatusControl_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue is DeviceModel dev)
@@ -24,6 +35,10 @@ namespace USortThis.UI.Views.Controls
             }
         }
 
+        /// <summary>
+        /// Binds the specified device to the control, updating the UI to reflect the device's properties.
+        /// </summary>
+        /// <param name="device">The device to bind to the control.</param>
         public void BindDevice(DeviceModel device)
         {
             if (device == null) return;
@@ -77,6 +92,11 @@ namespace USortThis.UI.Views.Controls
             }
         }
 
+        /// <summary>
+        /// Event handler that is called when a property of the device changes.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void Device_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(DeviceModel.IsConnected) && _boundDevice != null)
@@ -85,6 +105,10 @@ namespace USortThis.UI.Views.Controls
             }
         }
 
+        /// <summary>
+        /// Updates the visual indication of the device's connection status.
+        /// </summary>
+        /// <param name="isConnected">A boolean value indicating whether the device is connected.</param>
         private void UpdateConnectionStatus(bool isConnected)
         {
             if (this.FindName("StatusIndicator") is Ellipse indicator)
@@ -95,6 +119,12 @@ namespace USortThis.UI.Views.Controls
             }
         }
 
+        /// <summary>
+        /// Gets the icon for the specified device type.
+        /// Currently, this method returns null.
+        /// </summary>
+        /// <param name="type">The device type.</param>
+        /// <returns>An <see cref="ImageSource"/> representing the icon for the device type, or null.</returns>
         private ImageSource? GetIconForDevice(DeviceModel.DeviceTypes type)
         {
             // For simplicity return null; future: return pack icons or emoji-based approach

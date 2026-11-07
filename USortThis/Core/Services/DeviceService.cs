@@ -44,6 +44,12 @@ namespace USortThis.Core.Services
             return device;
         }
 
+        /// <summary>
+        /// Retrieves a device based on the given file path.
+        /// </summary>
+        /// <param name="path">The file path to lookup the device.</param>
+        /// <returns>The device associated with the path, or null if no device is found.</returns>
+        /// <exception cref="ArgumentException">Thrown when the path is null or empty.</exception>
         public static DeviceModel? GetDeviceFromPath(string path)
         {
             try

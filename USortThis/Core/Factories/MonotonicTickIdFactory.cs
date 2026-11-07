@@ -14,6 +14,8 @@ namespace USortThis.Core.Factories
         // 16-bit counter for IDs generated within the same tick
         private uint _counter;
 
+        /// <summary>Creates a monotonically increasing identifier from the current UTC tick and a counter.</summary>
+        /// <returns>A numeric identifier that preserves generation order.</returns>
         public long CreateId()
         {
             long timestamp = DateTime.UtcNow.Ticks;
@@ -55,6 +57,8 @@ namespace USortThis.Core.Factories
             return id;
         }
 
+        /// <summary>Creates a monotonically increasing identifier and formats it as a string.</summary>
+        /// <returns>The generated identifier in decimal form.</returns>
         public string CreateIdString() => CreateId().ToString();
     }
 }

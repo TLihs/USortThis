@@ -20,6 +20,9 @@ namespace USortThis.Views.Contols
     /// </summary>
     public partial class FilterRuleCriteriaControl : System.Windows.Controls.UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterRuleCriteriaControl"/> class.
+        /// </summary>
         public FilterRuleCriteriaControl()
         {
             InitializeComponent();

@@ -19,6 +19,12 @@ namespace USortThis.Core.Services
     {
         private sealed record Root(string Path, bool IsSource, bool MovesSource);
 
+        /// <summary>
+        /// Checks if there's a conflict between the paths of the candidate profile item and the running profile item.
+        /// </summary>
+        /// <param name="candidate">The candidate profile item to check.</param>
+        /// <param name="running">The currently running profile item.</param>
+        /// <returns>A <see cref="ProfilePathConflict"/> instance describing the conflict, if any.</returns>
         public static ProfilePathConflict Check(ProfileItemModel candidate, ProfileItemModel running)
         {
             var candidateRoots = GetRoots(candidate);
@@ -59,6 +65,13 @@ namespace USortThis.Core.Services
                 : new ProfilePathConflict(ProfileConflictKind.None, string.Empty);
         }
 
+        /// <summary>
+        /// Determines if two file system paths overlap, considering them as equivalent if they resolve to the same absolute path
+        /// or if one path is a subdirectory of the other.
+        /// </summary>
+        /// <param name="first">The first path to compare.</param>
+        /// <param name="second">The second path to compare.</param>
+        /// <returns><c>true</c> if the paths overlap; otherwise, <c>false</c>.</returns>
         public static bool PathsOverlap(string first, string second)
         {
             if (string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(second))

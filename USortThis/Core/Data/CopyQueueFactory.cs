@@ -38,6 +38,7 @@ namespace USortThis.Core.Data
         private static readonly TimeSpan _usbRefreshInterval = TimeSpan.FromSeconds(30);
         private static readonly TimeSpan _usbRefreshMinInterval = TimeSpan.FromSeconds(1);
 
+        /// <summary>Subscribes to device changes and starts periodic USB discovery.</summary>
         static CopyQueueFactory()
         {
             // Subscribe to device availability changes to attempt resume
@@ -112,6 +113,9 @@ namespace USortThis.Core.Data
             }
         }
 
+        /// <summary>Responds to device connection changes by resuming queue processing and refreshing discovery data.</summary>
+        /// <param name="sender">The device whose property changed.</param>
+        /// <param name="e">The property-change details.</param>
         private static void Device_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(DeviceModel.IsConnected))
@@ -138,6 +142,7 @@ namespace USortThis.Core.Data
             }
         }
 
+        /// <summary>Discovers currently available system drives and starts copy-queue processing.</summary>
         public static async Task InitializeAsync()
         {
             //// Load pending items from DB
@@ -256,6 +261,8 @@ namespace USortThis.Core.Data
             }
         }
 
+        /// <summary>Adds a file to the copy queue.</summary>
+        /// <param name="file">The file model to enqueue.</param>
         public static void EnqueueFileForCopy(FileItemModel file)
         {
             //DatabaseService.SaveOrUpdateCopyQueueRecord(new DatabaseService.CopyQueueRecord
@@ -274,6 +281,9 @@ namespace USortThis.Core.Data
         }
 
         // Attempt to map a path to a known InterfaceDevice and return its Id string
+        /// <summary>Finds the registered device associated with a local or network path.</summary>
+        /// <param name="path">The path whose device should be identified.</param>
+        /// <returns>The matching device identifier, or null when no device can be matched.</returns>
         private static string? FindDeviceIdForPath(string? path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -434,11 +444,13 @@ namespace USortThis.Core.Data
             return null;
         }
 
+        /// <summary>Refreshes the cached USB-drive information.</summary>
         private static void EnsureUsbCache()
         {
             RefreshUsbCache();
         }
 
+        /// <summary>Re-enumerates USB drives, replaces the cache, and registers newly discovered devices.</summary>
         private static void RefreshUsbCache()
         {
             try
@@ -530,6 +542,9 @@ namespace USortThis.Core.Data
             }
         }
 
+        /// <summary>Resolves a host name and caches its resulting IP addresses.</summary>
+        /// <param name="host">The host name to resolve.</param>
+        /// <returns>The host's IP addresses, or an empty array when resolution fails.</returns>
         private static string[] GetHostAddressesCached(string host)
         {
             if (string.IsNullOrEmpty(host))
@@ -557,6 +572,8 @@ namespace USortThis.Core.Data
             }
         }
 
+        /// <summary>Revisits queued items that have not yet been associated with a device.</summary>
+        /// <remarks>The queue-item reassignment implementation is currently inactive.</remarks>
         private static async Task ReevaluateUnassignedQueueItemsAsync()
         {
             //try
@@ -609,6 +626,9 @@ namespace USortThis.Core.Data
             //catch { }
         }
 
+        /// <summary>Normalizes a path to an uppercase root ending in a directory separator.</summary>
+        /// <param name="p">The path whose root should be normalized.</param>
+        /// <returns>The normalized root, or the original input if normalization fails.</returns>
         private static string NormalizeRoot(string p)
         {
             if (string.IsNullOrEmpty(p)) return string.Empty;

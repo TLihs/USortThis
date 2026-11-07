@@ -14,11 +14,14 @@ namespace USortThis.Core.Factories
     {
         private readonly IMainWindowModelFactory _viewModelFactory;
 
+        /// <summary>Initializes the factory with the main-window view-model factory.</summary>
+        /// <param name="viewModelFactory">The factory used to create the window's view model.</param>
         public MainWindowFactory(IMainWindowModelFactory viewModelFactory)
         {
             _viewModelFactory = viewModelFactory;
         }
 
+        /// <summary>Creates the main window, assigns its view model, and connects close requests.</summary>
         public MainWindow Create()
         {
             var model = new MainWindowModel();

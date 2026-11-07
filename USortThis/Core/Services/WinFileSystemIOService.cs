@@ -10,18 +10,36 @@ using USortThis.Core.Interfaces;
 
 namespace USortThis.Core.Services
 {
+    /// <summary>
+    /// WinFileSystemIOService provides an implementation of IFileSystemIOService using the Windows file system APIs.
+    /// </summary>
     public class WinFileSystemIOService : IFileSystemIOService
     {
+        /// <summary>
+        /// Determines whether the file exists at the specified path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>True if the file exists; otherwise, false.</returns>
         public bool FileExists(string path)
         {
             return File.Exists(path);
         }
 
+        /// <summary>
+        /// Determines whether the directory exists at the specified path.
+        /// </summary>
+        /// <param name="path">The directory path.</param>
+        /// <returns>True if the directory exists; otherwise, false.</returns>
         public bool DirectoryExists(string path)
         {
             return Directory.Exists(path);
         }
 
+        /// <summary>
+        /// Gets the creation time of the file at the specified path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>The creation time of the file; null if the file does not exist or an error occurs.</returns>
         public DateTime? GetCreationTime(string path)
         {
             try
@@ -34,6 +52,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Gets the last write time of the file at the specified path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>The last write time of the file; null if the file does not exist or an error occurs.</returns>
         public DateTime? GetLastWriteTime(string path)
         {
             try
@@ -46,6 +69,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Gets the size of the file at the specified path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>The size of the file in bytes; null if the file does not exist or an error occurs.</returns>
         public long? GetFileSize(string path)
         {
             try
@@ -58,6 +86,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Gets the directory name of the file at the specified path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>The directory name; null if the path is invalid or an error occurs.</returns>
         public string? GetDirectoryName(string path)
         {
             try
@@ -70,6 +103,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Gets the extension of the file at the specified path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>The file extension without the leading dot; empty string if the file has no extension; null if an error occurs.</returns>
         public string? GetExtension(string path)
         {
             try
@@ -85,6 +123,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Gets the file name with extension from the specified path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>The file name with extension; null if the path is invalid or an error occurs.</returns>
         public string? GetFileName(string path)
         {
             try
@@ -97,6 +140,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Gets the file name without extension from the specified path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>The file name without extension; null if the path is invalid or an error occurs.</returns>
         public string? GetFileNameWithoutExtension(string path)
         {
             try
@@ -109,6 +157,12 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Determines whether the file has the specified extension.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <param name="extension">The extension to check for.</param>
+        /// <returns>True if the file has the specified extension; otherwise, false.</returns>
         public bool HasExtension(string path, string extension)
         {
             var ext = GetExtension(path);
@@ -118,6 +172,11 @@ namespace USortThis.Core.Services
             return ext.Equals(extension, StringComparison.InvariantCultureIgnoreCase);
         }
 
+        /// <summary>
+        /// Determines whether the file at the specified path can be accessed.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>True if the file can be accessed; otherwise, false.</returns>
         public bool CanAccessFile(string path)
         {
             try
@@ -131,6 +190,11 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Gets file information for the file at the specified path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>A FileInfo object containing file information; null if the path is invalid or an error occurs.</returns>
         public FileInfo? GetFileInfo(string path)
         {
             try
@@ -144,6 +208,13 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Enumerates the files in the directory at the specified path.
+        /// </summary>
+        /// <param name="path">The directory path.</param>
+        /// <param name="searchPattern">The search pattern (optional).</param>
+        /// <param name="searchOption">The search option (optional).</param>
+        /// <returns>An enumerable collection of file paths.</returns>
         public IEnumerable<string> EnumerateFiles(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
@@ -161,6 +232,15 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Asynchronously enumerates the files in the directory at the specified path.
+        /// </summary>
+        /// <param name="path">The directory path.</param>
+        /// <param name="searchPattern">The search pattern (optional).</param>
+        /// <param name="searchOption">The search option (optional).</param>
+        /// <param name="errors">A progress reporter for file enumeration errors (optional).</param>
+        /// <param name="cancellationToken">A cancellation token (optional).</param>
+        /// <returns>An async enumerable collection of file paths.</returns>
         public async IAsyncEnumerable<string> EnumerateFilesAsync(string path, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly, IProgress<USortThis.Core.Models.FileEnumerationError>? errors = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -199,6 +279,18 @@ namespace USortThis.Core.Services
             }
         }
 
+        /// <summary>
+        /// Asynchronously copies a file from the source path to the destination path, starting at the specified position.
+        /// </summary>
+        /// <param name="sourceFullPath">The source file path.</param>
+        /// <param name="destFullPath">The destination file path.</param>
+        /// <param name="startPosition">The position in the source file to start copying from.</param>
+        /// <param name="ensureDirectory">Whether to ensure the destination directory exists.</param>
+        /// <param name="progress">A progress reporter for the copy operation (optional).</param>
+        /// <param name="cancellationToken">A cancellation token (optional).</param>
+        /// <exception cref="FileNotFoundException">Thrown when the source file does not exist.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the destination directory does not exist and ensureDirectory is true.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when startPosition is less than 0 or greater than the source file length.</exception>
         public async Task CopyAsync(string sourceFullPath, string destFullPath, long startPosition, bool ensureDirectory, IProgress<long>? progress, CancellationToken cancellationToken)
         {
             // Ensure the source file exists

@@ -51,12 +51,24 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeviceModel"/> class with the specified id, device type, and device name.
+        /// </summary>
+        /// <param name="id">The unique identifier for the device.</param>
+        /// <param name="deviceType">The type of the device (e.g., Local, Network, Usb).</param>
+        /// <param name="deviceName">The name of the device.</param>
         public DeviceModel(long id, DeviceTypes deviceType, string deviceName) : base(id)
         {
             DeviceType = deviceType;
             DeviceName = deviceName;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeviceModel"/> class with the specified device type and device name.
+        /// The id is auto-incremented.
+        /// </summary>
+        /// <param name="deviceType">The type of the device (e.g., Local, Network, Usb).</param>
+        /// <param name="deviceName">The name of the device.</param>
         public DeviceModel(DeviceTypes deviceType, string deviceName) : base(++_nextId)
         {
             DeviceType = deviceType;
@@ -66,6 +78,11 @@ namespace USortThis.Core.Models
         public DeviceTypes DeviceType { get; }
 
         // New helper: determine device type from a path string
+        /// <summary>
+        /// Determines the device type (Local, Network, Usb) from the specified path string.
+        /// </summary>
+        /// <param name="path">The path string to analyze (e.g., file path, UNC path).</param>
+        /// <returns>The detected device type.</returns>
         public static DeviceTypes GetDeviceTypeFromPath(string? path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -131,11 +148,17 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Starts polling the connection status in a background thread.
+        /// </summary>
         public void StartConnectionStatusPolling()
         {
             Task.Run(() => ConnectionStatusPollingThread());
         }
 
+        /// <summary>
+        /// The thread method that periodically checks the connection status of the device.
+        /// </summary>
         public void ConnectionStatusPollingThread()
         {
             while (true)
@@ -152,6 +175,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Checks the connection status of the device. This method must be implemented in derived classes.
+        /// </summary>
         public abstract void CheckConnectionStatus();
     }
 
@@ -159,16 +185,30 @@ namespace USortThis.Core.Models
     {
         public string DevicePath { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterfaceStorageDevice"/> class with the specified device name and device path.
+        /// </summary>
+        /// <param name="deviceName">The name of the storage device.</param>
+        /// <param name="devicePath">The device path (e.g., "E:\").</param>
         public InterfaceStorageDevice(string deviceName, string devicePath) : base(DeviceTypes.Local, deviceName)
         {
             DevicePath = devicePath;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterfaceStorageDevice"/> class with the specified id, device name, and device path.
+        /// </summary>
+        /// <param name="id">The unique identifier for the device.</param>
+        /// <param name="deviceName">The name of the storage device.</param>
+        /// <param name="devicePath">The device path (e.g., "E:\").</param>
         public InterfaceStorageDevice(long id, string deviceName, string devicePath) : base(id, DeviceTypes.Local, deviceName)
         {
             DevicePath = devicePath;
         }
 
+        /// <summary>
+        /// Checks the connection status of the storage device by verifying if the device path exists.
+        /// </summary>
         public override void CheckConnectionStatus()
         {
             try
@@ -252,6 +292,15 @@ namespace USortThis.Core.Models
         public string? NetworkPassword { get; set; }
         public string? NetworkDomain { get; set; } // optional
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterfaceNetworkDevice"/> class with the specified id, device name, IP address, and optional credentials.
+        /// </summary>
+        /// <param name="id">The unique identifier for the device.</param>
+        /// <param name="deviceName">The name of the network device.</param>
+        /// <param name="ipAddress">The IP address or hostname of the device.</param>
+        /// <param name="username">The network username for authentication (optional).</param>
+        /// <param name="password">The network password for authentication (optional).</param>
+        /// <param name="domain">The network domain for authentication (optional).</param>
         public InterfaceNetworkDevice(long id, string deviceName, string ipAddress, string? username = null, string? password = null, string? domain = null) : base(id, DeviceTypes.Network, deviceName)
         {
             _ipAddress = ExtractHostnameOrIp(ipAddress);
@@ -261,6 +310,14 @@ namespace USortThis.Core.Models
             NetworkDomain = domain;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterfaceNetworkDevice"/> class with the specified device name, IP address, and optional credentials.
+        /// </summary>
+        /// <param name="deviceName">The name of the network device.</param>
+        /// <param name="ipAddress">The IP address or hostname of the device.</param>
+        /// <param name="username">The network username for authentication (optional).</param>
+        /// <param name="password">The network password for authentication (optional).</param>
+        /// <param name="domain">The network domain for authentication (optional).</param>
         public InterfaceNetworkDevice(string deviceName, string ipAddress, string? username = null, string? password = null, string? domain = null) : base(DeviceTypes.Network, deviceName)
         {
             _ipAddress = ExtractHostnameOrIp(ipAddress);
@@ -275,6 +332,8 @@ namespace USortThis.Core.Models
         /// For UNC paths like "\\server\share", extracts "server".
         /// For drive letters like "Z:\", attempts to resolve via P/Invoke or returns the input.
         /// </summary>
+        /// <param name="path">The path string to extract the hostname or IP from.</param>
+        /// <returns>The extracted hostname or IP.</returns>
         private static string ExtractHostnameOrIp(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -323,9 +382,40 @@ namespace USortThis.Core.Models
         }
 
         // P/Invoke for WNetGetConnection
+        /// <summary>
+        /// Retrieves the remote name of a network resource associated with a local device (e.g., mapped drive).
+        /// </summary>
+        /// <param name="localName">The local device name (e.g., "Z:").</param>
+        /// <param name="remoteName">The buffer that receives the remote name.</param>
+        /// <param name="length">The size of the remote name buffer.</param>
+        /// <returns>Zero if successful; otherwise, an error code.</returns>
         [DllImport("mpr.dll", CharSet = CharSet.Auto)]
         private static extern uint WNetGetConnection(string localName, StringBuilder remoteName, ref int length);
 
+        /// <summary>
+        /// Establishes a network connection to a resource.
+        /// </summary>
+        /// <param name="lpNetResource">A NETRESOURCE structure that specifies the network resource to connect to.</param>
+        /// <param name="lpPassword">The password for the user account.</param>
+        /// <param name="lpUserName">The user name for the account.</param>
+        /// <param name="dwFlags">Connection options.</param>
+        /// <returns>Zero if successful; otherwise, an error code.</returns>
+        [DllImport("mpr.dll", CharSet = CharSet.Unicode)]
+        private static extern int WNetAddConnection2([In] ref NETRESOURCE lpNetResource, [MarshalAs(UnmanagedType.LPWStr)] string lpPassword, [MarshalAs(UnmanagedType.LPWStr)] string lpUserName, uint dwFlags);
+
+        /// <summary>
+        /// Cancels a network connection to a resource.
+        /// </summary>
+        /// <param name="lpName">The name of the resource to disconnect from.</param>
+        /// <param name="dwFlags">Connection options.</param>
+        /// <param name="fForce">True to force the disconnection; otherwise, false.</param>
+        /// <returns>Zero if successful; otherwise, an error code.</returns>
+        [DllImport("mpr.dll", CharSet = CharSet.Unicode)]
+        private static extern int WNetCancelConnection2([MarshalAs(UnmanagedType.LPWStr)] string lpName, uint dwFlags, bool fForce);
+
+        /// <summary>
+        /// Checks the connection status of the network device by attempting to authenticate to the IPC$ share or pinging the device.
+        /// </summary>
         public override void CheckConnectionStatus()
         {
             // Prefer credential-based check when credentials are supplied (best for SMB shares that require auth).
@@ -363,6 +453,7 @@ namespace USortThis.Core.Models
         /// <summary>
         /// Helper to set IsConnected on the UI thread if needed.
         /// </summary>
+        /// <param name="isConnected">The connection status to marshal.</param>
         private void MarshalIsConnected(bool isConnected)
         {
             if (isConnected != IsConnected)
@@ -383,6 +474,15 @@ namespace USortThis.Core.Models
 
         // Attempts to briefly authenticate to \\{ip}\IPC$ using provided credentials.
         // Returns true if authentication succeeded (NO_ERROR from WNetAddConnection2).
+        /// <summary>
+        /// Attempts to authenticate to the IPC$ share of the specified IP address using the provided credentials.
+        /// This is used to check the connection status of network devices.
+        /// </summary>
+        /// <param name="ip">The IP address of the network device.</param>
+        /// <param name="username">The username for authentication.</param>
+        /// <param name="password">The password for authentication.</param>
+        /// <param name="domain">The domain for authentication (optional).</param>
+        /// <returns>True if authentication succeeded, false otherwise.</returns>
         private static bool TryConnectToIpcShare(string ip, string username, string password, string? domain)
         {
             string remote = $"\\\\{ip}\\IPC$";
@@ -446,12 +546,6 @@ namespace USortThis.Core.Models
             public string? lpProvider;
         }
 
-        [DllImport("mpr.dll", CharSet = CharSet.Unicode)]
-        private static extern int WNetAddConnection2([In] ref NETRESOURCE lpNetResource, [MarshalAs(UnmanagedType.LPWStr)] string lpPassword, [MarshalAs(UnmanagedType.LPWStr)] string lpUserName, uint dwFlags);
-
-        [DllImport("mpr.dll", CharSet = CharSet.Unicode)]
-        private static extern int WNetCancelConnection2([MarshalAs(UnmanagedType.LPWStr)] string lpName, uint dwFlags, bool fForce);
-
         #endregion
     }
 
@@ -477,16 +571,30 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterfaceUsbDevice"/> class with the specified id, device name, and optional device identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier for the device.</param>
+        /// <param name="deviceName">The name of the USB device.</param>
+        /// <param name="deviceIdentifier">An optional identifier for the device (e.g., VID+PID, serial number).</param>
         public InterfaceUsbDevice(long id, string deviceName, string? deviceIdentifier = null) : base(id, DeviceTypes.Usb, deviceName)
         {
             DeviceIdentifier = deviceIdentifier;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterfaceUsbDevice"/> class with the specified device name and optional device identifier.
+        /// </summary>
+        /// <param name="deviceName">The name of the USB device.</param>
+        /// <param name="deviceIdentifier">An optional identifier for the device (e.g., VID+PID, serial number).</param>
         public InterfaceUsbDevice(string deviceName, string? deviceIdentifier = null) : base(DeviceTypes.Usb, deviceName)
         {
             DeviceIdentifier = deviceIdentifier;
         }
 
+        /// <summary>
+        /// Checks the connection status of the USB device by querying connected USB storage drives and matching against the device identifier or name.
+        /// </summary>
         public override void CheckConnectionStatus()
         {
             try
@@ -583,6 +691,7 @@ namespace USortThis.Core.Models
         /// <summary>
         /// Helper to set IsConnected on the UI thread if needed.
         /// </summary>
+        /// <param name="isConnected">The connection status to marshal.</param>
         private void MarshalIsConnected(bool isConnected)
         {
             if (isConnected != IsConnected)

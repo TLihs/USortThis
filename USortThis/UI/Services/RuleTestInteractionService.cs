@@ -10,8 +10,17 @@ using USortThis.UI.Views;
 
 namespace USortThis.UI.Services
 {
+    /// <summary>
+    /// Service for interacting with the rule testing UI, including selecting sample files and showing test results.
+    /// </summary>
     public sealed class RuleTestInteractionService : IRuleTestInteractionService
     {
+        /// <summary>
+        /// Opens a file dialog for the user to select sample files to test against profile routes.
+        /// </summary>
+        /// <returns>
+        /// An array of selected file paths if the user selects files; otherwise, null.
+        /// </returns>
         public IReadOnlyList<string>? SelectSampleFiles()
         {
             var dialog = new OpenFileDialog
@@ -26,6 +35,12 @@ namespace USortThis.UI.Services
             return selected == true ? dialog.FileNames : null;
         }
 
+        /// <summary>
+        /// Displays the results of the rule tests in a modal window.
+        /// </summary>
+        /// <param name="results">
+        /// The results to be displayed in the window.
+        /// </param>
         public void ShowResults(IReadOnlyList<RuleTestResult> results)
         {
             var window = new RuleTestResultsWindow(results);

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace USortThis.Core.Models
 {
+    /// <summary>
+    /// Represents a filter rule for sorting files.
+    /// </summary>
     public class FilterRuleModel : ListModelBase<FilterRuleCriteriaBaseModel>
     {
         private readonly List<FilterRuleCriteriaBaseModel> _criterias;
@@ -17,12 +20,22 @@ namespace USortThis.Core.Models
 
         public enum DestinationPathMode
         {
+            /// <summary>
+            /// Preserves the relative path of the file.
+            /// </summary>
             PreserveRelativePath,
+
+            /// <summary>
+            /// Organizes files into date-based folders.
+            /// </summary>
             DateFolder
         }
 
         private DestinationPathMode _destinationPathMode;
 
+        /// <summary>
+        /// Gets or sets the name of the filter rule.
+        /// </summary>
         public string Name
         {
             get => _name;
@@ -36,6 +49,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets or sets the destination path for the filtered files.
+        /// </summary>
         public string DestinationPath
         {
             get => _destinationPath;
@@ -49,6 +65,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets or sets the mode for determining the destination path.
+        /// </summary>
         public DestinationPathMode PathMode
         {
             get => _destinationPathMode;
@@ -63,12 +82,18 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to preserve the relative path.
+        /// </summary>
         public bool PreserveRelativePath
         {
             get => PathMode == DestinationPathMode.PreserveRelativePath;
             set => PathMode = value ? DestinationPathMode.PreserveRelativePath : DestinationPathMode.DateFolder;
         }
 
+        /// <summary>
+        /// Gets or sets the date folder pattern for organizing files.
+        /// </summary>
         public string DateFolderPattern
         {
             get => _dateFolderPattern;
@@ -82,6 +107,9 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to use the creation time of the files.
+        /// </summary>
         public bool UseCreationTime
         {
             get => _useCreationTime;
@@ -100,12 +128,21 @@ namespace USortThis.Core.Models
         /// </summary>
         public IReadOnlyList<FilterRuleCriteriaBaseModel> Criterias => _criterias.AsReadOnly();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterRuleModel"/> class.
+        /// </summary>
+        /// <param name="id">The unique identifier for the filter rule.</param>
+        /// <param name="name">The name of the filter rule.</param>
         public FilterRuleModel(long id, string name) : base(id)
         {
             _name = name;
             _criterias = [];
         }
 
+        /// <summary>
+        /// Adds a new criteria to the filter rule.
+        /// </summary>
+        /// <param name="model">The filter rule criteria to add.</param>
         public void AddRuleCriteria(FilterRuleCriteriaBaseModel model)
         {
             try
@@ -119,6 +156,10 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Removes a criteria from the filter rule.
+        /// </summary>
+        /// <param name="model">The filter rule criteria to remove.</param>
         public void RemoveRuleCriteria(FilterRuleCriteriaBaseModel model)
         {
             try
@@ -136,6 +177,8 @@ namespace USortThis.Core.Models
         /// Returns true if the provided file matches this filter rule.
         /// A rule with no criteria matches everything.
         /// </summary>
+        /// <param name="file">The file to evaluate.</param>
+        /// <returns>true if the file matches the filter rule; otherwise, false.</returns>
         public bool Matches(FileItemModel file)
         {
             if (_criterias.Count == 0)

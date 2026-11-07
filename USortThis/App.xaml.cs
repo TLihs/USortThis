@@ -27,6 +27,10 @@ namespace USortThis
 
         internal bool IsExiting => _isExiting;
         
+        /// <summary>
+        /// Initializes the application, configures services, and shows the main window.
+        /// </summary>
+        /// <param name="e">Startup event arguments.</param>
         protected override async void OnStartup(StartupEventArgs e)
         {
             var services = new ServiceCollection();
@@ -103,6 +107,10 @@ namespace USortThis
             }
         }
 
+        /// <summary>
+        /// Creates and configures the system tray icon and its context menu.
+        /// </summary>
+        /// <param name="mainWindow">The main window of the application.</param>
         private void CreateTrayIcon(Window mainWindow)
         {
             var menu = new Forms.ContextMenuStrip();
@@ -124,6 +132,11 @@ namespace USortThis
             _trayIcon.DoubleClick += (_, _) => ShowMainWindow(mainWindow);
         }
 
+        /// <summary>
+        /// Handles the Closing event of the main window to hide the window instead of closing it.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The cancel event arguments.</param>
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             if (_isExiting)
@@ -134,6 +147,11 @@ namespace USortThis
                 window.Hide();
         }
 
+        /// <summary>
+        /// Handles the StateChanged event of the main window to hide or restore the window.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event arguments.</param>
         private void MainWindow_StateChanged(object? sender, EventArgs e)
         {
             if (sender is Window { WindowState: WindowState.Minimized } window)
@@ -143,6 +161,10 @@ namespace USortThis
             }
         }
 
+        /// <summary>
+        /// Shows and activates the main window, restoring it from the minimized state if necessary.
+        /// </summary>
+        /// <param name="window">The main window to show.</param>
         private void ShowMainWindow(Window window)
         {
             if (!window.IsVisible)
@@ -152,6 +174,9 @@ namespace USortThis
             window.Activate();
         }
 
+        /// <summary>
+        /// Exits the application, disposing of the tray icon and shutting down the application.
+        /// </summary>
         internal void ExitApplication()
         {
             if (_isExiting)
@@ -163,6 +188,10 @@ namespace USortThis
             Shutdown();
         }
 
+        /// <summary>
+        /// Handles the Exit event of the application to dispose of the tray icon.
+        /// </summary>
+        /// <param name="e">The exit event arguments.</param>
         protected override void OnExit(ExitEventArgs e)
         {
             _trayIcon?.Dispose();

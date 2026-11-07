@@ -7,18 +7,29 @@ using System.Windows;
 
 namespace USortThis.UI.Views
 {
+    /// <summary>
+    /// Interaction logic for TestFileGeneratorWindow.xaml
+    /// </summary>
     public partial class TestFileGeneratorWindow : Window
     {
         private const int BufferSize = 1024 * 1024;
         private const string PrintableCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,;:!?-_+=()[]{}";
         private readonly CancellationTokenSource _cancellationTokenSource = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestFileGeneratorWindow"/> class.
+        /// </summary>
         public TestFileGeneratorWindow()
         {
             InitializeComponent();
             FolderTextBox.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
+        /// <summary>
+        /// Handles the Click event of the Browse button.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Browse_Click(object sender, RoutedEventArgs e)
         {
             using var dialog = new System.Windows.Forms.FolderBrowserDialog
@@ -31,6 +42,14 @@ namespace USortThis.UI.Views
                 FolderTextBox.Text = dialog.SelectedPath;
         }
 
+        /// <summary>
+        /// Handles the Click event of the Generate button.
+        /// Validates inputs, shows overwrite confirmation, and initiates async file generation.
+        /// Updates UI with progress, success, or error messages.
+        /// Cancels ongoing operations on subsequent clicks.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void Generate_Click(object sender, RoutedEventArgs e)
         {
             if (!TryGetFileSize(out var fileSize))
@@ -82,6 +101,11 @@ namespace USortThis.UI.Views
             }
         }
 
+        /// <summary>
+        /// Tries to parse the file size from the SizeTextBox input and the selected unit from the SizeUnitComboBox.
+        /// </summary>
+        /// <param name="size">The parsed file size in bytes.</param>
+        /// <returns>True if the file size is successfully parsed; otherwise, false.</returns>
         private bool TryGetFileSize(out long size)
         {
             size = 0;
@@ -102,6 +126,15 @@ namespace USortThis.UI.Views
             return true;
         }
 
+        /// <summary>
+        /// Asynchronously generates a test file with random content at the specified path.
+        /// Updates the progress bar and status text during the operation.
+        /// </summary>
+        /// <param name="path">The file path where the test file will be created.</param>
+        /// <param name="fileSize">The desired file size in bytes.</param>
+        /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
+        /// <exception cref="OperationCanceledException">Thrown when the operation is cancelled.</exception>
+        /// <exception cref="Exception">Thrown when an error occurs during file generation.</exception>
         private async Task GenerateFileAsync(string path, long fileSize, CancellationToken cancellationToken)
         {
             var buffer = new byte[BufferSize];
@@ -125,6 +158,10 @@ namespace USortThis.UI.Views
             }
         }
 
+        /// <summary>
+        /// Cancels the file generation operation if it is running and releases resources.
+        /// </summary>
+        /// <param name="e">The event data.</param>
         protected override void OnClosed(EventArgs e)
         {
             _cancellationTokenSource.Cancel();

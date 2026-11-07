@@ -8,6 +8,9 @@ using USortThis.Core.Models;
 
 namespace USortThis.Core.Services
 {
+    /// <summary>
+    /// Service for importing and exporting profile data.
+    /// </summary>
     public sealed class ProfileImportExportService
     {
         private const int CurrentFormatVersion = 1;
@@ -17,6 +20,14 @@ namespace USortThis.Core.Services
         private readonly IFilterRuleCriteriaFactory _criteriaFactory;
         private readonly IDatabaseService _databaseService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfileImportExportService"/> class.
+        /// </summary>
+        /// <param name="idFactory">The ID factory.</param>
+        /// <param name="bridgeFactory">The bridge model factory.</param>
+        /// <param name="folderFactory">The folder item model factory.</param>
+        /// <param name="criteriaFactory">The filter rule criteria factory.</param>
+        /// <param name="databaseService">The database service.</param>
         public ProfileImportExportService(IIdFactory idFactory, IFolderBridgeModelFactory bridgeFactory,
             IFolderItemModelFactory folderFactory, IFilterRuleCriteriaFactory criteriaFactory, IDatabaseService databaseService)
         {
@@ -27,6 +38,13 @@ namespace USortThis.Core.Services
             _databaseService = databaseService;
         }
 
+        /// <summary>
+        /// Exports the specified profile to the given file path.
+        /// </summary>
+        /// <param name="profile">The profile to export.</param>
+        /// <param name="filePath">The file path to export the profile to.</param>
+        /// <exception cref="ArgumentNullException">Thrown when profile is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when file path is null or whitespace.</exception>
         public void Export(ProfileItemModel profile, string filePath)
         {
             ArgumentNullException.ThrowIfNull(profile);
@@ -57,6 +75,14 @@ namespace USortThis.Core.Services
             File.WriteAllText(filePath, JsonSerializer.Serialize(document, new JsonSerializerOptions { WriteIndented = true }));
         }
 
+        /// <summary>
+        /// Imports a profile from the specified file path.
+        /// </summary>
+        /// <param name="filePath">The file path to import the profile from.</param>
+        /// <returns>The imported profile.</returns>
+        /// <exception cref="ArgumentException">Thrown when file path is null or whitespace.</exception>
+        /// <exception cref="InvalidDataException">Thrown when the file does not contain a valid profile.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the imported profile could not be saved.</exception>
         public ProfileItemModel Import(string filePath)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
@@ -110,6 +136,12 @@ namespace USortThis.Core.Services
             return profile;
         }
 
+        /// <summary>
+        /// Exports the given criteria to a <see cref="ProfileCriteriaDocument"/>.
+        /// </summary>
+        /// <param name="criteria">The criteria to export.</param>
+        /// <returns>The exported criteria.</returns>
+        /// <exception cref="InvalidDataException">Thrown when the criteria type is unsupported.</exception>
         private ProfileCriteriaDocument ExportCriteria(FilterRuleCriteriaBaseModel criteria) => criteria switch
         {
             FilterRuleCriteriaModelNone => new() { Type = "None" },
@@ -120,6 +152,12 @@ namespace USortThis.Core.Services
             _ => throw new InvalidDataException($"Unsupported criteria type: {criteria.GetType().Name}.")
         };
 
+        /// <summary>
+        /// Imports the given criteria from a <see cref="ProfileCriteriaDocument"/>.
+        /// </summary>
+        /// <param name="criteria">The criteria document to import.</param>
+        /// <returns>The imported criteria.</returns>
+        /// <exception cref="InvalidDataException">Thrown when the criterion type is unsupported or when date information is missing for date criteria.</exception>
         private FilterRuleCriteriaBaseModel ImportCriteria(ProfileCriteriaDocument criteria) => criteria.Type switch
         {
             "None" => _criteriaFactory.CreateNoFilter(),

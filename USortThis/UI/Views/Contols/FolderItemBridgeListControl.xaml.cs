@@ -20,6 +20,9 @@ namespace USortThis.UI.Views.Controls
     /// </summary>
     public partial class FolderItemBridgeListControl : System.Windows.Controls.UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FolderItemBridgeListControl"/> class.
+        /// </summary>
         public FolderItemBridgeListControl()
         {
             InitializeComponent();

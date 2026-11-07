@@ -27,11 +27,19 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfileListModel"/> class.
+        /// </summary>
+        /// <param name="id">The unique identifier for the profile list.</param>
         public ProfileListModel(long id) : base(id)
         {
             _profiles = new List<ProfileItemModel>();
         }
 
+        /// <summary>
+        /// Adds a profile to the list.
+        /// </summary>
+        /// <param name="model">The profile model to add.</param>
         public void AddProfile(ProfileItemModel model)
         {
             try
@@ -45,6 +53,10 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Removes a profile from the list.
+        /// </summary>
+        /// <param name="model">The profile model to remove.</param>
         public void RemoveProfile(ProfileItemModel model)
         {
             try

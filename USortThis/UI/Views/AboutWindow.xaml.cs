@@ -20,11 +20,20 @@ namespace USortThis.UI.Views
     /// </summary>
     public partial class AboutWindow : Window
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AboutWindow"/> class.
+        /// </summary>
         public AboutWindow()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Handles the Click event of the CloseButton control.
+        /// Closes the About window.
+        /// </summary>
+        /// <param name="sender">The source of the event, typically the CloseButton.</param>
+        /// <param name="e">The routed event data.</param>
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();

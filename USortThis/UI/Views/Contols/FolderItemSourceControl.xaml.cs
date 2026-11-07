@@ -20,11 +20,17 @@ namespace USortThis.UI.Views.Controls
     /// </summary>
     public partial class FolderItemSourceControl : System.Windows.Controls.UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FolderItemSourceControl"/> class.
+        /// </summary>
         public FolderItemSourceControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Gets the ViewModel associated with this control.
+        /// </summary>
         public object ViewModel => DataContext;
     }
 }
