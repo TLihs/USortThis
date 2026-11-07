@@ -9,10 +9,31 @@ using USortThis.Core.Models;
 
 namespace USortThis.Core.Services
 {
+    /// <summary>
+    /// Service class for managing devices and their connections.
+    /// </summary>
     public static class DeviceService
     {
-        public static ObservableCollection<DeviceModel> InterfaceDevices { get; set; } = [];
+        /// <summary>
+        /// Initializes the <see cref="DeviceService"/> class.
+        /// </summary>
+        static DeviceService()
+        {
+        }
 
+        /// <summary>
+        /// Gets the collection of interface devices.
+        /// </summary>
+        public static ObservableCollection<DeviceModel> InterfaceDevices { get; set; } = new();
+
+        /// <summary>
+        /// Adds a new device of the specified type.
+        /// </summary>
+        /// <param name="deviceType">The type of the device to add.</param>
+        /// <param name="deviceName">The name of the device.</param>
+        /// <param name="location">The location of the device.</param>
+        /// <returns>The newly added device, or null if the device could not be added.</returns>
+        /// <exception cref="ArgumentException">Thrown when the device type is unknown.</exception>
         public static DeviceModel? AddDevice(DeviceModel.DeviceTypes deviceType, string deviceName, string location)
         {
             DeviceModel? device = deviceType switch

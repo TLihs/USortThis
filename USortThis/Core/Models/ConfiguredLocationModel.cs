@@ -16,6 +16,21 @@ namespace USortThis.Core.Models
         private bool _useCurrentWindowsCredentials = true;
         private bool _isConnected;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfiguredLocationModel"/> class.
+        /// </summary>
+        /// <param name="id">The unique identifier for the location.</param>
+        /// <param name="label">The display label for the location.</param>
+        /// <param name="path">The file system path of the location.</param>
+        public ConfiguredLocationModel(long id, string label, string path) : base(id)
+        {
+            _label = label;
+            _path = path;
+        }
+
+        /// <summary>
+        /// Gets or sets the label of the location.
+        /// </summary>
         public string Label
         {
             get => _label;
@@ -131,14 +146,19 @@ namespace USortThis.Core.Models
             }
         }
 
+        /// <summary>
+        /// Gets the category of the location, which is always "User-configured" for this model.
+        /// </summary>
         public string Category => "User-configured";
-        public string AvailabilityLabel => IsConnected ? "Available" : "Unavailable";
-        public string CredentialTarget => $"USortThis/{Id}";
 
-        public ConfiguredLocationModel(long id, string label, string path) : base(id)
-        {
-            _label = label;
-            _path = path;
-        }
+        /// <summary>
+        /// Gets the availability label, indicating whether the location is "Available" or "Unavailable".
+        /// </summary>
+        public string AvailabilityLabel => IsConnected ? "Available" : "Unavailable";
+
+        /// <summary>
+        /// Gets the credential target string used for storing and retrieving credentials.
+        /// </summary>
+        public string CredentialTarget => $"USortThis/{Id}";
     }
 }

@@ -47,6 +47,8 @@ namespace USortThis.Core.Data
         // (Partial list; we only need BusTypeUsb)
         private const byte BusTypeUsb = 7;
 
+        /// <summary>Enumerates ready drives and returns device details for those using the USB bus.</summary>
+        /// <returns>The USB drive information that could be queried successfully.</returns>
         public static IEnumerable<UsbDriveInfo> GetUsbDrives()
         {
             var results = new List<UsbDriveInfo>();
@@ -112,6 +114,10 @@ namespace USortThis.Core.Data
             return results;
         }
 
+        /// <summary>Parses USB identifiers and bus information from a storage-device descriptor buffer.</summary>
+        /// <param name="buffer">The descriptor bytes returned by Windows.</param>
+        /// <param name="length">The number of valid bytes in <paramref name="buffer"/>.</param>
+        /// <returns>The parsed drive information, with default values when the descriptor is too short.</returns>
         private static UsbDriveInfo ParseStorageDeviceDescriptor(byte[] buffer, int length)
         {
             // STORAGE_DEVICE_DESCRIPTOR structure layout (partial):
@@ -137,13 +143,26 @@ namespace USortThis.Core.Data
             // read little-endian uints/bytes from buffer safely
             uint readUInt32(int offset)
             {
+                // reads a bounded little-endian 32-bit value
                 if (offset + 4 > length) return 0;
                 return (uint)(buffer[offset] | buffer[offset + 1] << 8 | buffer[offset + 2] << 16 | buffer[offset + 3] << 24);
             }
             byte readByte(int offset)
             {
+                // reads a byte within the valid buffer length
                 if (offset >= length) return 0;
                 return buffer[offset];
+            }
+
+            string? readStringFromOffset(uint off)
+            {
+                // reads a null-terminated ASCII string at a descriptor offset
+                if (off == 0 || off >= length) return null;
+                int i = (int)off;
+                int end = i;
+                while (end < length && buffer[end] != 0) end++;
+                if (end <= i) return null;
+                return Encoding.ASCII.GetString(buffer, i, end - i).Trim();
             }
 
             // Offsets in the STORAGE_DEVICE_DESCRIPTOR:
@@ -160,16 +179,6 @@ namespace USortThis.Core.Data
             // BusType is at offset 28 in the STORAGE_DEVICE_DESCRIPTOR
             byte busType = readByte(28);
 
-            string? readStringFromOffset(uint off)
-            {
-                if (off == 0 || off >= length) return null;
-                int i = (int)off;
-                int end = i;
-                while (end < length && buffer[end] != 0) end++;
-                if (end <= i) return null;
-                return Encoding.ASCII.GetString(buffer, i, end - i).Trim();
-            }
-
             result.VendorId = readStringFromOffset(vendorOffset);
             result.ProductId = readStringFromOffset(productOffset);
             result.ProductRevision = readStringFromOffset(productRevOffset);
@@ -180,6 +189,9 @@ namespace USortThis.Core.Data
             return result;
         }
 
+        /// <summary>Opens a device path for shared read access and releases invalid handles.</summary>
+        /// <param name="path">The device path to open.</param>
+        /// <returns>A valid safe handle, or null when the device cannot be opened.</returns>
         private static SafeFileHandle? CreateFileHandle(string path)
         {
             // GENERIC_READ | GENERIC_WRITE (we only need read)
@@ -199,6 +211,15 @@ namespace USortThis.Core.Data
 
         #region P/Invoke
 
+        /// <summary>Opens an existing file or device and returns its native handle.</summary>
+        /// <param name="lpFileName">The path of the file or device.</param>
+        /// <param name="dwDesiredAccess">The requested access mode.</param>
+        /// <param name="dwShareMode">The sharing mode for the open handle.</param>
+        /// <param name="lpSecurityAttributes">Optional native security attributes.</param>
+        /// <param name="dwCreationDisposition">The action to take when opening the path.</param>
+        /// <param name="dwFlagsAndAttributes">The file or device flags.</param>
+        /// <param name="hTemplateFile">An optional template handle.</param>
+        /// <returns>A safe handle for the opened file or device.</returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern SafeFileHandle CreateFile(
             string lpFileName,
@@ -209,6 +230,16 @@ namespace USortThis.Core.Data
             uint dwFlagsAndAttributes,
             nint hTemplateFile);
 
+        /// <summary>Sends a control code to a device driver.</summary>
+        /// <param name="hDevice">The device handle receiving the control code.</param>
+        /// <param name="dwIoControlCode">The control code to send.</param>
+        /// <param name="lpInBuffer">The input buffer, when required by the control code.</param>
+        /// <param name="nInBufferSize">The size of the input buffer.</param>
+        /// <param name="lpOutBuffer">Receives the device response.</param>
+        /// <param name="nOutBufferSize">The capacity of the output buffer.</param>
+        /// <param name="lpBytesReturned">Receives the number of bytes returned.</param>
+        /// <param name="lpOverlapped">Optional overlapped-I/O state.</param>
+        /// <returns>True when the control operation succeeds.</returns>
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool DeviceIoControl(
             nint hDevice,
